@@ -1,5 +1,10 @@
 const kAppVersion = "0.0.1";
 
+function randomElementIn(collection) {
+  const index = Math.floor(Math.random() * collection.length);
+  return collection[index];
+}
+
 class Place {
   constructor(place_name, cosy_rate, equipement_rate, place_description) {
     this.name = place_name;
@@ -37,12 +42,6 @@ const kCoworkerFirstNames = [
   'Philippe',
   'Anthony',
 ];
-
-
-function randomElementIn(collection) {
-  const index = Math.floor(Math.random() * collection.length);
-  return collection[index];
-}
 
 const kCoworkerNameFirstLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 class Coworker {
