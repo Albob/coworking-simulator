@@ -36,7 +36,7 @@ const kPlaces = [
   new Place("À la CCI", 2, 2),
 ];
 
-function randomElement(collection) {
+function randomElementIn(collection) {
   const index = Math.floor(Math.random() * collection.length);
   return collection[index];
 }
@@ -44,7 +44,7 @@ function randomElement(collection) {
 const kCoworkerNameFirstLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 class Coworker {
   constructor() {
-    this.name = `${randomElement(kCoworkerFirstNames)} ${randomElement(kCoworkerNameFirstLetters)}.`;
+    this.name = `${randomElementIn(kCoworkerFirstNames)} ${randomElementIn(kCoworkerNameFirstLetters)}.`;
   }
 }
 
