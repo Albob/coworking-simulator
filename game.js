@@ -51,6 +51,8 @@ class Coworker {
 class Dom {
   constructor() {
     this.place = document.getElementById('place');
+    this.coworkers = document.getElementById('coworkers');
+    this.money = document.getElementById('money');
   }
 }
 
@@ -61,6 +63,7 @@ class Game {
     this.level = 0;
     this.dom = new Dom();
     this.dom.place.innerText = `Nom: ${kPlaces[this.level].name}`;
+    this.dom.coworkers.innerText = `Nom: ${this.coworkers[0].name}`;
   }
 
   update() {
@@ -68,8 +71,7 @@ class Game {
   }
 
   render() {
-    document.getElementById('coworkers').innerText = `Nom: ${this.coworkers[0].name}`;
-    document.getElementById('money').innerText = this.money + "€";
+    this.dom.money.innerText = this.money + "€";
   }
 }
 
