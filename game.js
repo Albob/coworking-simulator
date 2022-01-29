@@ -46,8 +46,12 @@ const kCoworkerFirstNames = [
 const kJobs = [
   ['Influenceur', 'Influenceuse'],
   ['Developpeur', 'Developpeuse'],
+  ['Web designer', 'Web designer'],
   ['Architecte', 'Architecte'],
   ['Graphiste', 'Graphiste'],
+  ['Illustrateur', 'Illustratrice'],
+  ['Dessinateur', 'Dessinatrice'],
+  ['Animateur', 'Animatrice'],
   ['Facilitateur', 'Facilitatrice'],
   ['Congierge', 'Congierge'],
   ['Commercial', 'Commerciale'],
