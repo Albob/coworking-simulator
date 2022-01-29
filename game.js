@@ -147,14 +147,28 @@ class Game {
   render() {
     this.dom.money.innerText = this.money + "€";
 
+    const getButtonClosure = (index) => {
+      return () => {
+        const coworker = this.coworkers[index];
+        coworker.isWorking = !coworker.isWorking;
+      };
+    };
+
+    let i = 0;
     this.dom.coworkers.innerHTML = '';
     this.coworkers.forEach(coworker => {
-      this.dom.coworkers.innerHTML = `Nom: ${coworker.name}`;
-      this.dom.coworkers.innerHTML += `<br/>Métier: ${coworker.job}`;
-      this.dom.coworkers.innerHTML += `<br/>Equilibre (-100=improductif, +100=burn-out): ${coworker.balance}`;
+      const buttonId = `toggleCoworker${i}`;
+      let html = `Nom: ${coworker.name}`;
+      html += `<br/>Métier: ${coworker.job}`;
+      html += `<br/>Equilibre (-100=improductif, +100=burn-out): ${coworker.balance}`;
+      html += `<br/><input type="button" id="${buttonId}" value="Faire une pause / travailler" />`;
+      this.dom.coworkers.innerHTML += html;
+      document.getElementById(buttonId).addEventListener('click', getButtonClosure(i));
+      i++;
     });
   }
 }
+
 
 function main() {
   const game = new Game();
