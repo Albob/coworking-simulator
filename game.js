@@ -104,6 +104,15 @@ class Coworker {
     const jobTitle = randomElementIn(kJobs)[sex == 'M' ? 0 : 1];
     const jobAdjective = randomElementIn(kJobAdjectives)[sex == 'M' ? 0 : 1];
     this.job = `${jobTitle} ${jobAdjective}`;
+
+    this.balance = 0;
+    this.isWorking = true;
+  }
+
+  update(place) {
+    const factor = this.isWorking ? 1 : -1;
+    const effect = this.isWorking ? place.equipementRate : place.cosyRate;
+    this.balance += factor * 5 / effect;
   }
 }
 
@@ -125,18 +134,25 @@ class Game {
     const place = kPlaces[this.level];
     this.dom.place.innerHTML = `Nom: ${place.name}<br/>Description: ${place.description}`;
 
-    this.dom.coworkers.innerHTML = '';
-    this.coworkers.forEach(coworker => {
-      this.dom.coworkers.innerHTML = `Nom: ${coworker.name}<br/>Métier: ${coworker.job}`;
-    });
+    this.render();
   }
 
   update() {
-    this.money += this.coworkers.length
+    this.money += this.coworkers.length;
+
+    const place = kPlaces[this.level];
+    this.coworkers.forEach(coworker => { coworker.update(place); });
   }
 
   render() {
     this.dom.money.innerText = this.money + "€";
+
+    this.dom.coworkers.innerHTML = '';
+    this.coworkers.forEach(coworker => {
+      this.dom.coworkers.innerHTML = `Nom: ${coworker.name}`;
+      this.dom.coworkers.innerHTML += `<br/>Métier: ${coworker.job}`;
+      this.dom.coworkers.innerHTML += `<br/>Equilibre (-100=improductif, +100=burn-out): ${coworker.balance}`;
+    });
   }
 }
 
