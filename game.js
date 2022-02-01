@@ -150,6 +150,10 @@ class Game {
       return () => {
         const coworker = this.coworkers[index];
         coworker.isWorking = !coworker.isWorking;
+
+        const buttonId = `toggleCoworker${index}`;
+        const button = document.getElementById(buttonId);
+        button.setAttribute('value', coworker.isWorking ? 'Faire une pause' : 'Reprendre le travail');
       };
     };
 
@@ -159,8 +163,8 @@ class Game {
       const buttonId = `toggleCoworker${i}`;
       let html = `Nom: ${coworker.name}`;
       html += `<br/>Métier: ${coworker.job}`;
-      html += `<br/>Equilibre (-100=improductif, +100=burn-out): ${coworker.balance}`;
-      html += `<br/><input type="button" id="${buttonId}" value="Faire une pause / travailler" />`;
+      html += `<br/>Equilibre (-100=improductif, +100=burn-out): <span id="coworkerBalance${i}">${coworker.balance}</span>`;
+      html += `<br/><input type="button" id="${buttonId}" value="Faire une pause" />`;
       this.dom.coworkers.innerHTML += html;
       document.getElementById(buttonId).addEventListener('click', getButtonClosure(i));
       i++;
