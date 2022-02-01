@@ -134,7 +134,6 @@ class Game {
     const place = kPlaces[this.level];
     this.dom.place.innerHTML = `Nom: ${place.name}<br/>Description: ${place.description}`;
 
-    this.render();
   }
 
   update() {
@@ -172,6 +171,7 @@ class Game {
 
 function main() {
   const game = new Game();
+  game.render();
   window.setInterval(() => {
     game.update();
     game.render();
