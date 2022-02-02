@@ -131,21 +131,11 @@ class Game {
     this.level = 0;
     this.dom = new Dom();
 
+    // Place
     const place = kPlaces[this.level];
     this.dom.place.innerHTML = `Nom: ${place.name}<br/>Description: ${place.description}`;
 
-  }
-
-  update() {
-    this.money += this.coworkers.length;
-
-    const place = kPlaces[this.level];
-    this.coworkers.forEach(coworker => { coworker.update(place); });
-  }
-
-  render() {
-    this.dom.money.innerText = this.money + "€";
-
+    // Coworkers
     const getButtonClosure = (index) => {
       return () => {
         const coworker = this.coworkers[index];
@@ -167,6 +157,25 @@ class Game {
       html += `<br/><input type="button" id="${buttonId}" value="Faire une pause" />`;
       this.dom.coworkers.innerHTML += html;
       document.getElementById(buttonId).addEventListener('click', getButtonClosure(i));
+      i++;
+    });
+  }
+
+  update() {
+    this.money += this.coworkers.length;
+
+    const place = kPlaces[this.level];
+    this.coworkers.forEach(coworker => { coworker.update(place); });
+  }
+
+  render() {
+    this.dom.money.innerText = this.money + "€";
+
+    let i = 0;
+    this.coworkers.forEach(coworker => {
+      const balanceSpanId = `coworkerBalance${i}`;
+      const span = document.getElementById(balanceSpanId);
+      span.innerText = coworker.balance > 0 ? `+${coworker.balance}` : coworker.balance;
       i++;
     });
   }
