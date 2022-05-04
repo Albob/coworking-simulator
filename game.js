@@ -119,6 +119,7 @@ class Coworker {
 class Dom {
   constructor() {
     this.place = document.getElementById('place');
+    this.clock = document.getElementById('clock');
     this.coworkers = document.getElementById('coworkers');
     this.money = document.getElementById('money');
   }
@@ -130,6 +131,7 @@ class Game {
     this.money = 0;
     this.level = 0;
     this.dom = new Dom();
+    this.clock = 8 * 60; // 8:00 am
 
     // Place
     const place = kPlaces[this.level];
@@ -162,6 +164,7 @@ class Game {
   }
 
   update() {
+    this.clock += 1;
     this.money += this.coworkers.length;
 
     const place = kPlaces[this.level];
@@ -169,15 +172,23 @@ class Game {
   }
 
   render() {
+    {
+      const hours = Math.floor(this.clock / 60).toString();
+      const minutes = (this.clock % 60).toString();
+      this.dom.clock.innerText = `${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}`;
+    }
+
     this.dom.money.innerText = this.money + "€";
 
-    let i = 0;
-    this.coworkers.forEach(coworker => {
-      const balanceSpanId = `coworkerBalance${i}`;
-      const span = document.getElementById(balanceSpanId);
-      span.innerText = coworker.balance > 0 ? `+${coworker.balance}` : coworker.balance;
-      i++;
-    });
+    {
+      let i = 0;
+      this.coworkers.forEach(coworker => {
+        const balanceSpanId = `coworkerBalance${i}`;
+        const span = document.getElementById(balanceSpanId);
+        span.innerText = coworker.balance > 0 ? `+${coworker.balance}` : coworker.balance;
+        i++;
+      });
+    }
   }
 }
 
