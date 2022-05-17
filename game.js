@@ -1,4 +1,9 @@
-const kAppVersion = "0.0.1";
+const kAppVersion = "0.0.2";
+
+const kFPS = 15;
+const kIngameTimeFactor = 1100;
+const kBalancePerHour = 32;
+const kMoneyPerHour = 1;
 
 function randomElementIn(collection) {
   const index = Math.floor(Math.random() * collection.length);
@@ -15,7 +20,7 @@ class Place {
 }
 
 const kPlaces = [
-  new Place("Dans un bar", 2, 1, 'Un endroit convivial mais bruyant'),
+  new Place("Bar la Licorne", 2, 1, 'Un endroit convivial mais bruyant'),
   new Place("Dans un local prêté par un ami", 1, 2, 'Un endroit pratique mais un peu austère'),
   new Place("À la CCI", 2, 3, 'Un endroit qui permet de se concentrer et aussi de se détendre'),
   new Place("La Capsule II", 3, 4, 'Les meilleures conditions, à la fois pour travailler et pour'),
@@ -126,12 +131,6 @@ class Coworker {
     this.balance = 0;
     this.isWorking = true;
   }
-
-  update(place) {
-    const factor = this.isWorking ? 1 : -1;
-    const effect = this.isWorking ? place.equipementRate : place.cosyRate;
-    this.balance += factor * 5 / effect;
-  }
 }
 
 class Dom {
@@ -149,7 +148,7 @@ class Game {
     this.money = 0;
     this.level = 0;
     this.dom = new Dom();
-    this.clock = 7 * 60; // 8:00 am
+    this.clockMs = 7 * 60 * 60 * 1000; // 7:00 am
 
     // Place
     const place = kPlaces[this.level];
@@ -181,29 +180,38 @@ class Game {
     });
   }
 
-  update() {
-    this.clock += 1;
-    this.money += this.coworkers.length;
+  update(deltaMs) {
+    const ingameDeltaMs = deltaMs * kIngameTimeFactor;
+
+    this.clockMs += ingameDeltaMs;
+    this.money += this.coworkers.length * ingameDeltaMs * (kMoneyPerHour / (3600000));
 
     const place = kPlaces[this.level];
-    this.coworkers.forEach(coworker => { coworker.update(place); });
+    this.coworkers.forEach(coworker => {
+      const factor = coworker.isWorking ? 1 : -1;
+      // const effect = coworker.isWorking ? place.equipementRate : place.cosyRate;
+      coworker.balance += factor * ingameDeltaMs * (kBalancePerHour / (3600000));
+    });
   }
 
   render() {
     {
-      const hours = Math.floor(this.clock / 60).toString();
-      const minutes = (this.clock % 60).toString();
-      this.dom.clock.innerText = `${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}`;
+      const minutes = Math.floor(this.clockMs / (60000));
+      const displayDay = (Math.floor(minutes / 1440) + 1).toString();
+      const displayHours = (Math.floor(minutes / 60) % 24).toString().padStart(2, '0');
+      const displayMinutes = (minutes % 60).toString().padStart(2, '0');
+      this.dom.clock.innerText = `Jour ${displayDay}, ${displayHours}:${displayMinutes}`;
     }
 
-    this.dom.money.innerText = this.money + "€";
+    this.dom.money.innerText = Math.floor(this.money) + "€";
 
     {
       let i = 0;
       this.coworkers.forEach(coworker => {
-        const balanceSpanId = `coworkerBalance${i}`;
-        const span = document.getElementById(balanceSpanId);
-        span.innerText = coworker.balance > 0 ? `+${coworker.balance}` : coworker.balance;
+        const span = document.getElementById(`coworkerBalance${i}`);
+        const balance = Math.round(coworker.balance);
+        const sign = balance > 0 ? '+' : ''; // negative numbers already display a minus sign
+        span.innerText = `${sign}${balance}`;
         i++;
       });
     }
@@ -213,11 +221,15 @@ class Game {
 
 function main() {
   const game = new Game();
+  let lastUpdate = performance.now();
+
   game.render();
   window.setInterval(() => {
-    game.update();
+    const now = performance.now();
+    game.update(now - lastUpdate);
     game.render();
-  }, 1000);
+    lastUpdate = now;
+  }, 1000 / kFPS);
 }
 
 window.addEventListener('load', main)
