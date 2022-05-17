@@ -173,7 +173,7 @@ class Game {
       const buttonId = `toggleCoworker${i}`;
       let html = `Nom: ${coworker.name}
         <br/>Métier: ${coworker.job}
-        <br/>Equilibre (-100=improductif, +100=burn-out): <span id="coworkerBalance${i}">${coworker.balance}</span>
+        <br/>Equilibre: <span id="coworkerBalance${i}">${coworker.balance}</span>
         <br/><input type="button" id="${buttonId}" value="Faire une pause" />`;
       this.dom.coworkers.innerHTML += html;
       document.getElementById(buttonId).addEventListener('click', getButtonClosure(i));
