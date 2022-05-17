@@ -22,25 +22,43 @@ const kPlaces = [
 ];
 
 const kCoworkerFirstNames = [
-  ['Pierre', 'M'],
-  ['Pierre-Louis', 'M'],
-  ['Pierre-Francois', 'M'],
-  ['Sophie', 'F'],
-  ['Chloe', 'F'],
-  ['Nico', 'M'],
-  ['Gael', 'M'],
-  ['Sandra', 'F'],
-  ['Paul', 'M'],
+  ['Alexandra', 'F'],
+  ['Alexis', 'M'],
+  ['Anthony', 'M'],
+  ['Benjamin', 'M'],
+  ['Chloé', 'F'],
+  ['Christine', 'F'],
   ['David', 'M'],
   ['Elise', 'F'],
-  ['Guillaume', 'M'],
-  ['Benjamin', 'M'],
-  ['Christine', 'F'],
-  ['Alexis', 'M'],
-  ['Alexandra', 'F'],
   ['Emilie', 'F'],
+  ['Gael', 'M'],
+  ['Guillaume', 'M'],
+  ['Julien', 'F'],
+  ['Manon', 'F'],
+  ['Margaux', 'F'],
+  ['Nicolas', 'M'],
+  ['Nolwenn', 'F'],
+  ['Paul', 'M'],
   ['Philippe', 'M'],
-  ['Anthony', 'M'],
+  ['Pierre-Arnaud', 'M'],
+  ['Pierre-Francois', 'M'],
+  ['Pierre-Louis', 'M'],
+  ['Pierre', 'M'],
+  ['Sandra', 'F'],
+  ['Sophie', 'F'],
+  ['Yannick', 'F'],
+];
+
+const kCoworkerLastNames = [
+  'Basque',
+  'Bouchouille',
+  'Clouzot',
+  'Gilette',
+  'Labenne',
+  'Liroy',
+  'Séjoune',
+  'Tchengue-a',
+  'Valpouche',
 ];
 
 const kJobs = [
@@ -91,15 +109,13 @@ const kJobAdjectives = [
   ["mais rêve secrètement d'être aventurier", "mais rêve secrètement d'être aventurière"],
 ];
 
-const kCoworkerNameFirstLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-
 class Coworker {
   constructor() {
     const firstNameAndSex = randomElementIn(kCoworkerFirstNames);
     const firstName = firstNameAndSex[0];
     const sex = firstNameAndSex[1];
 
-    this.name = `${firstName} ${randomElementIn(kCoworkerNameFirstLetters)}.`;
+    this.name = `${firstName} ${randomElementIn(kCoworkerLastNames)}.`;
 
     const jobTitle = randomElementIn(kJobs)[sex == 'M' ? 0 : 1];
     const jobAdjective = randomElementIn(kJobAdjectives)[sex == 'M' ? 0 : 1];
