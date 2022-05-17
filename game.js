@@ -149,7 +149,7 @@ class Game {
     this.money = 0;
     this.level = 0;
     this.dom = new Dom();
-    this.clock = 8 * 60; // 8:00 am
+    this.clock = 7 * 60; // 8:00 am
 
     // Place
     const place = kPlaces[this.level];
