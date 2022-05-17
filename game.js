@@ -82,6 +82,7 @@ const kJobs = [
   ['Agriculteur', 'Agricultrice'],
   ['Conseiller', 'Conseillère'],
   ['Éleveur', 'Éleveuse'],
+  ['Éducateur', 'Éducatrice'],
 ];
 
 const kJobAdjectives = [
@@ -97,6 +98,7 @@ const kJobAdjectives = [
   ['en agencement', 'en agencement'],
   ['sur internet', 'sur internet'],
   ['en éducation', 'en éducation'],
+  ['en conseil', 'en conseil'],
   ['autodidacte', 'autodidacte'],
   ['debutant', 'debutante'],
   ['confirmé', 'confirmée'],
