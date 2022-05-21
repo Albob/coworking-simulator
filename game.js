@@ -165,7 +165,7 @@ class Game {
 
         const buttonId = `toggleCoworker${index}`;
         const button = document.getElementById(buttonId);
-        button.setAttribute('value', coworker.isWorking ? 'Faire une pause' : 'Reprendre le travail');
+        button.setAttribute('value', coworker.isWorking ? 'Faire une pause' : 'Travailler');
       };
     };
 
