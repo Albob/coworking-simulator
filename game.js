@@ -4,6 +4,7 @@ const kFPS = 15;
 const kIngameTimeFactor = 1100;
 const kBalancePerHour = 32;
 const kMoneyPerHour = 1;
+const kMembershipCost = 35;
 
 function randomElementIn(collection) {
   const index = Math.floor(Math.random() * collection.length);
@@ -185,16 +186,37 @@ class Game {
 
   update(deltaMs) {
     const ingameDeltaMs = deltaMs * kIngameTimeFactor;
-
     this.clockMs += ingameDeltaMs;
-    this.money += this.coworkers.length * ingameDeltaMs * (kMoneyPerHour / (3600000));
 
-    const place = kPlaces[this.level];
-    this.coworkers.forEach(coworker => {
-      const factor = coworker.isWorking ? 1 : -1;
-      // const effect = coworker.isWorking ? place.equipementRate : place.cosyRate;
-      coworker.balance += factor * ingameDeltaMs * (kBalancePerHour / (3600000));
-    });
+    // Update work balance
+    {
+      const place = kPlaces[this.level];
+      this.coworkers = this.coworkers.filter(worker => {
+        const factor = worker.isWorking ? 1 : -1;
+        // const effect = worker.isWorking ? place.equipementRate : place.cosyRate;
+        worker.balance += factor * ingameDeltaMs * (kBalancePerHour / (3600000));
+
+        if (Math.abs(worker.balance) > 100) {
+          const cause = worker.balance > 0 ? 'travail' : 'glandouille';
+          this.logEvent(`${worker.name} a fait un surmenage par excès de ${cause}`);
+          this.logEvent(`${worker.name} demande un remboursement de sa cotisation. Vous perdez ${kMembershipCost}€`);
+          this.money -= kMembershipCost;
+          return false;
+        }
+
+        return true
+      });
+
+      if (this.coworkers.length == 0) {
+        window.location.replace("game_over.html");
+        return;
+      }
+    }
+
+    // Update money won.
+    {
+      this.money += this.coworkers.length * ingameDeltaMs * (kMoneyPerHour / (3600000));
+    }
   }
 
   render() {
@@ -224,6 +246,10 @@ class Game {
         i++;
       });
     }
+  }
+
+  logEvent(text) {
+    console.log(text);
   }
 }
 
