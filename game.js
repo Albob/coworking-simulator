@@ -11,19 +11,20 @@ function randomElementIn(collection) {
 }
 
 class Place {
-  constructor(place_name, cosy_rate, equipement_rate, place_description) {
+  constructor(place_name, cosy_rate, equipement_rate, place_description, capacity) {
     this.name = place_name;
     this.cosyRate = cosy_rate;
     this.equipementRate = equipement_rate;
     this.description = place_description;
+    this.capacity = capacity;
   }
 }
 
 const kPlaces = [
-  new Place("Bar la Licorne", 2, 1, 'Un endroit convivial mais bruyant'),
-  new Place("Dans un local prêté par un ami", 1, 2, 'Un endroit pratique mais un peu austère'),
-  new Place("À la CCI", 2, 3, 'Un endroit qui permet de se concentrer et aussi de se détendre'),
-  new Place("La Capsule II", 3, 4, 'Les meilleures conditions, à la fois pour travailler et pour'),
+  new Place("Bar la Licorne", 2, 1, 'Un endroit convivial mais bruyant.', 3),
+  new Place("Dans un local prêté par un ami", 1, 2, 'Un endroit pratique mais un peu austère.', 8),
+  new Place("À la CCI", 2, 3, 'Un endroit qui permet de se concentrer et aussi de se détendre.', 15),
+  new Place("La Capsule II", 3, 4, 'Les meilleures conditions, à la fois pour travailler et pour prendre une pause', 30),
 ];
 
 const kCoworkerFirstNames = [
@@ -152,7 +153,9 @@ class Game {
 
     // Place
     const place = kPlaces[this.level];
-    this.dom.place.innerHTML = `Nom: ${place.name}<br/>Description: ${place.description}`;
+    this.dom.place.innerHTML = `Nom: ${place.name}<br/>
+      Description: ${place.description}<br/>
+      Charge: <span id="place_charge">${this.coworkers.length}/${place.capacity}</span>`;
 
     // Coworkers
     const getButtonClosure = (index) => {
@@ -195,6 +198,12 @@ class Game {
   }
 
   render() {
+    {
+      const place = kPlaces[this.level];
+      const chargeSpan = document.getElementById('place_charge');
+      chargeSpan.innerHTML = `${this.coworkers.length}/${place.capacity}`;
+    }
+
     {
       const minutes = Math.floor(this.clockMs / (60000));
       const displayDay = (Math.floor(minutes / 1440) + 1).toString();
