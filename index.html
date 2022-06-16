@@ -5,35 +5,119 @@
   <meta charset="utf-8">
   <title>Coworking Simulator</title>
   <script type="module" src="game.js"></script>
+  <style>
+    .table_center {
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .person {
+      border: 1px black solid;
+      border-collapse: collapse;
+    }
+
+    body {
+      width: 80%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    table {
+      width: 100%;
+    }
+
+    td {
+      padding-top: 5px;
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+  </style>
 </head>
 
 <body>
   <h1>Coworking Simulator</h1>
-  <div>
-    <h2>Lieu</h2>
-    <p id="place">La maison</p>
-  </div>
 
-  <div>
-    <h2>Horloge</h2>
-    <p id="clock">7:00</p>
-  </div>
+  <table class="table_center">
+    <colgroup>
+      <col style="width: 20%;">
+      <col style="width: 20%;">
+      <col style="width: 20%;">
+      <col style="width: 20%;">
+      <col style="width: 20%;">
+    </colgroup>
 
-  <div>
-    <h2>Coworkers</h2>
-    <p>(Aide: -100 = improductif, +100 = burn-out))</p>
-    <p id="coworkers">Vous</p>
-  </div>
+    <tr>
+      <td colspan="2">
+        <h2>Lieu</h2>
+        <p id="place">La maison</p>
+      </td>
+      <td>
+        <h2>Calendrier</h2>
+        <p id="calendar">Jour 1</p>
+      </td>
+      <td>
+        <h2>Horloge</h2>
+        <p id="clock">7:00</p>
+      </td>
+      <td>
+        <h2>Trésorerie</h2>
+        <p id="money">0€</p>
+      </td>
+    </tr>
 
-  <div>
-    <h2>Trésorerie</h2>
-    <p id="money">0€</p>
-  </div>
+    <tr>
+      <td colspan="5">
+        <h2>Coworkers</h2>
+        <p>(Aide: -100 = improductif, +100 = burn-out))</p>
+      </td>
+    </tr>
+    <tr class="person">
+      <td class="person">
+        <p id="coworkers">Vous</p>
+      </td>
+      <td class="person">
+        <p>Vide</p>
+      </td>
+      <td class="person">
+        <p>Vide</p>
+      </td>
+      <td class="person">
+        <p>Vide</p>
+      </td>
+      <td class="person">
+        <p>Vide</p>
+      </td>
+    </tr>
+    <tr class="person">
+      <td class="person">
+        <p>Vide</p>
+      </td>
+      <td class="person">
+        <p>Vide</p>
+      </td>
+      <td class="person">
+        <p>Vide</p>
+      </td>
+      <td class="person">
+        <p>Vide</p>
+      </td>
+      <td class="person">
+        <p>Vide</p>
+      </td>
+    </tr>
 
-  <div>
-    <h2>Boutique</h2>
-    <p id="shop"><i>Vide...</i></p>
-  </div>
+    <tr>
+      <td colspan="5">
+        <h2>Boutique</h2>
+        <p id="shop"><i>Vide...</i></p>
+      </td>
+    </tr>
+  </table>
+
 </body>
 
 </html>
