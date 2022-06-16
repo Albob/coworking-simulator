@@ -139,6 +139,7 @@ class Dom {
   constructor() {
     this.place = document.getElementById('place');
     this.clock = document.getElementById('clock');
+    this.calendar = document.getElementById('calendar');
     this.coworkers = document.getElementById('coworkers');
     this.money = document.getElementById('money');
   }
@@ -231,7 +232,8 @@ class Game {
       const displayDay = (Math.floor(minutes / 1440) + 1).toString();
       const displayHours = (Math.floor(minutes / 60) % 24).toString().padStart(2, '0');
       const displayMinutes = (minutes % 60).toString().padStart(2, '0');
-      this.dom.clock.innerText = `Jour ${displayDay}, ${displayHours}:${displayMinutes}`;
+      this.dom.calendar.innerText = `Jour ${displayDay}`;
+      this.dom.clock.innerText = `${displayHours}:${displayMinutes}`;
     }
 
     this.dom.money.innerText = Math.floor(this.money) + "€";
