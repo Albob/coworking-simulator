@@ -202,16 +202,17 @@ class Game {
     // Update clock / time of day
     {
       if (this.clockMs > millisecondsFromHours(kLastHour)) {
-        const msg = 'Fin de la journée !';
-        console.log(msg);
-        window.alert(msg)
+        const displayTime = `${kLastHour.toString().padStart(2, '0')}:00`;
+        window.alert(`Fin de la journée #${this.day}, il est ${displayTime} !`);
         this.day += 1;
         this.clockMs = millisecondsFromHours(kFirstHour);
+        // add a new coworker
+        {
+
+        }
         now = performance.now();
-        console.log(`clock = ${this.clockMs}`);
       } else {
         this.clockMs += ingameDeltaMs;
-        console.log(`clock = ${this.clockMs}`);
       }
     }
 
