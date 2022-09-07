@@ -5,10 +5,16 @@ const kIngameTimeFactor = 1100;
 const kBalancePerHour = 32;
 const kMoneyPerHour = 1;
 const kMembershipCost = 35;
+const kFirstHour = 8;
+const kLastHour = 18;
 
 function randomElementIn(collection) {
   const index = Math.floor(Math.random() * collection.length);
   return collection[index];
+}
+
+function millisecondsFromHours(hours) {
+  return hours * 60 * 60 * 1000;
 }
 
 class Place {
@@ -151,7 +157,9 @@ class Game {
     this.money = 0;
     this.level = 0;
     this.dom = new Dom();
-    this.clockMs = 7 * 60 * 60 * 1000; // 7:00 am
+    this.clockMs = millisecondsFromHours(kFirstHour);
+    this.day = 1;
+    this.lastUpdate = performance.now();
 
     // Place
     const place = kPlaces[this.level];
@@ -185,9 +193,27 @@ class Game {
     });
   }
 
-  update(deltaMs) {
+  update() {
+    let now = performance.now();
+
+    const deltaMs = now - this.lastUpdate;
     const ingameDeltaMs = deltaMs * kIngameTimeFactor;
-    this.clockMs += ingameDeltaMs;
+
+    // Update clock / time of day
+    {
+      if (this.clockMs > millisecondsFromHours(kLastHour)) {
+        const msg = 'Fin de la journée !';
+        console.log(msg);
+        window.alert(msg)
+        this.day += 1;
+        this.clockMs = millisecondsFromHours(kFirstHour);
+        now = performance.now();
+        console.log(`clock = ${this.clockMs}`);
+      } else {
+        this.clockMs += ingameDeltaMs;
+        console.log(`clock = ${this.clockMs}`);
+      }
+    }
 
     // Update work balance
     {
@@ -218,6 +244,8 @@ class Game {
     {
       this.money += this.coworkers.length * ingameDeltaMs * (kMoneyPerHour / (3600000));
     }
+
+    this.lastUpdate = now;
   }
 
   render() {
@@ -229,10 +257,9 @@ class Game {
 
     {
       const minutes = Math.floor(this.clockMs / (60000));
-      const displayDay = (Math.floor(minutes / 1440) + 1).toString();
       const displayHours = (Math.floor(minutes / 60) % 24).toString().padStart(2, '0');
       const displayMinutes = (minutes % 60).toString().padStart(2, '0');
-      this.dom.calendar.innerText = `Jour ${displayDay}`;
+      this.dom.calendar.innerText = `Jour ${this.day}`;
       this.dom.clock.innerText = `${displayHours}:${displayMinutes}`;
     }
 
@@ -258,14 +285,11 @@ class Game {
 
 function main() {
   const game = new Game();
-  let lastUpdate = performance.now();
 
   game.render();
   window.setInterval(() => {
-    const now = performance.now();
-    game.update(now - lastUpdate);
+    game.update();
     game.render();
-    lastUpdate = now;
   }, 1000 / kFPS);
 }
 
