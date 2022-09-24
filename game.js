@@ -160,6 +160,10 @@ class Game {
     this.day = 1;
     this.lastUpdate = performance.now();
 
+    this.refreshHtml();
+  }
+
+  refreshHtml() {
     // Place
     const place = kPlaces[this.level];
     this.dom.place.innerHTML = `Nom: ${place.name}<br/>
@@ -167,17 +171,6 @@ class Game {
       Charge: <span id="place_charge">${this.coworkers.length}/${place.capacity}</span>`;
 
     // Coworkers
-    const getButtonClosure = (index) => {
-      return () => {
-        const coworker = this.coworkers[index];
-        coworker.isWorking = !coworker.isWorking;
-
-        const buttonId = `toggleCoworker${index}`;
-        const button = document.getElementById(buttonId);
-        button.setAttribute('value', coworker.isWorking ? 'Faire une pause' : 'Travailler');
-      };
-    };
-
     let i = 0;
     this.dom.coworkers.innerHTML = '';
     this.coworkers.forEach(coworker => {
@@ -187,9 +180,20 @@ class Game {
         <br/>Equilibre: <span id="coworkerBalance${i}">${coworker.balance}</span>
         <br/><input type="button" id="${buttonId}" value="Faire une pause" />`;
       this.dom.coworkers.innerHTML += html;
-      document.getElementById(buttonId).addEventListener('click', getButtonClosure(i));
+      document.getElementById(buttonId).addEventListener('click', this.getCoworkerButtonClosure(i));
       i++;
     });
+  }
+
+  getCoworkerButtonClosure(index) {
+    return () => {
+      const coworker = this.coworkers[index];
+      coworker.isWorking = !coworker.isWorking;
+
+      const buttonId = `toggleCoworker${index}`;
+      const button = document.getElementById(buttonId);
+      button.setAttribute('value', coworker.isWorking ? 'Faire une pause' : 'Travailler');
+    };
   }
 
   update() {
@@ -202,12 +206,16 @@ class Game {
     {
       if (this.clockMs > millisecondsFromHours(kLastHour)) {
         const displayTime = `${kLastHour.toString().padStart(2, '0')}:00`;
-        window.alert(`Fin de la journée #${this.day}, il est ${displayTime} !`);
+        this.logEvent(`Fin de la journée #${this.day}, il est ${displayTime} !`);
+        this.logEvent(`La Capsule fait parller d'elle et un nouveau coworker rejoint l'association!`);
         this.day += 1;
         this.clockMs = millisecondsFromHours(kFirstHour);
         // add a new coworker
         {
-
+          const newbie = new Coworker();
+          this.coworkers.push(newbie);
+          this.money += 30;
+          this.refreshHtml();
         }
         now = performance.now();
       } else {
