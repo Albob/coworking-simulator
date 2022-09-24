@@ -1,6 +1,5 @@
-const kAppVersion = "0.0.2";
+const kAppVersion = "0.0.3";
 
-const kFPS = 15;
 const kIngameTimeFactor = 1100;
 const kBalancePerHour = 32;
 const kMoneyPerHour = 1;
@@ -284,14 +283,17 @@ class Game {
 }
 
 
-function main() {
+function onLoad() {
   const game = new Game();
 
-  game.render();
-  window.setInterval(() => {
+  function loop() {
     game.update();
     game.render();
-  }, 1000 / kFPS);
+    setTimeout(loop);
+  }
+
+  game.render();
+  loop();
 }
 
-window.addEventListener('load', main)
+window.addEventListener('load', onLoad)
