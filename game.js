@@ -171,29 +171,17 @@ class Game {
       Charge: <span id="place_charge">${this.coworkers.length}/${place.capacity}</span>`;
 
     // Coworkers
+    let coworkersHtml = '';
     let i = 0;
-    this.dom.coworkers.innerHTML = '';
     this.coworkers.forEach(coworker => {
       const buttonId = `toggleCoworker${i}`;
-      let html = `Nom: ${coworker.name}
+      coworkersHtml += `Nom: ${coworker.name}
         <br/>Métier: ${coworker.job}
         <br/>Equilibre: <span id="coworkerBalance${i}">${coworker.balance}</span>
-        <br/><input type="button" id="${buttonId}" value="Faire une pause" />`;
-      this.dom.coworkers.innerHTML += html;
-      document.getElementById(buttonId).addEventListener('click', this.getCoworkerButtonClosure(i));
+        <br/><input type="button" id="${buttonId}" value="Faire une pause" onClick="onCoworkerClicked(${i})" />`;
       i++;
     });
-  }
-
-  getCoworkerButtonClosure(index) {
-    return () => {
-      const coworker = this.coworkers[index];
-      coworker.isWorking = !coworker.isWorking;
-
-      const buttonId = `toggleCoworker${index}`;
-      const button = document.getElementById(buttonId);
-      button.setAttribute('value', coworker.isWorking ? 'Faire une pause' : 'Travailler');
-    };
+    this.dom.coworkers.innerHTML = coworkersHtml;
   }
 
   update() {
@@ -207,7 +195,7 @@ class Game {
       if (this.clockMs > millisecondsFromHours(kLastHour)) {
         const displayTime = `${kLastHour.toString().padStart(2, '0')}:00`;
         this.logEvent(`Fin de la journée #${this.day}, il est ${displayTime} !`);
-        this.logEvent(`La Capsule fait parller d'elle et un nouveau coworker rejoint l'association!`);
+        this.logEvent(`La Capsule fait parler d'elle et un nouveau coworker rejoint l'association!`);
         this.day += 1;
         this.clockMs = millisecondsFromHours(kFirstHour);
         // add a new coworker
@@ -290,9 +278,22 @@ class Game {
   }
 }
 
+var game = {};
+
+function onCoworkerClicked(index) {
+  const coworker = game.coworkers[index];
+  game.logEvent(`${coworker.name} se ${coworker.isWorking ? 'repose' : 'remet au travail'}`);
+  coworker.isWorking = !coworker.isWorking;
+
+  const buttonId = `toggleCoworker${index}`;
+  const button = document.getElementById(buttonId);
+  button.setAttribute('value', coworker.isWorking ? 'Faire une pause' : 'Travailler');
+}
 
 function onLoad() {
-  const game = new Game();
+  window.onCoworkerClicked = onCoworkerClicked;
+  window.game = game;
+  game = new Game();
 
   function loop() {
     game.update();
