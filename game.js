@@ -185,10 +185,11 @@ class Game {
     let i = 0;
     this.coworkers.forEach(coworker => {
       const buttonId = `toggleCoworker${i}`;
+      const buttonText = coworker.isWorking ? 'Faire une pause' : 'Travailler';
       this.dom.coworkers[i].innerHTML = `Nom: ${coworker.name}
         <br/>Métier: ${coworker.job}
         <br/>Equilibre: <span id="coworkerBalance${i}">${coworker.balance}</span>
-        <br/><input type="button" id="${buttonId}" value="Faire une pause" onClick="onCoworkerClicked(${i})" />`;
+        <br/><input type="button" id="${buttonId}" value="${buttonText}" onClick="onCoworkerClicked(${i})" />`;
       i++;
     });
   }
