@@ -145,7 +145,18 @@ class Dom {
     this.place = document.getElementById('place');
     this.clock = document.getElementById('clock');
     this.calendar = document.getElementById('calendar');
-    this.coworkers = document.getElementById('coworkers');
+    this.coworkers = [
+      document.getElementById('coworker0'),
+      document.getElementById('coworker1'),
+      document.getElementById('coworker2'),
+      document.getElementById('coworker3'),
+      document.getElementById('coworker4'),
+      document.getElementById('coworker5'),
+      document.getElementById('coworker6'),
+      document.getElementById('coworker7'),
+      document.getElementById('coworker8'),
+      document.getElementById('coworker9'),
+    ];
     this.money = document.getElementById('money');
   }
 }
@@ -171,17 +182,15 @@ class Game {
       Charge: <span id="place_charge">${this.coworkers.length}/${place.capacity}</span>`;
 
     // Coworkers
-    let coworkersHtml = '';
     let i = 0;
     this.coworkers.forEach(coworker => {
       const buttonId = `toggleCoworker${i}`;
-      coworkersHtml += `Nom: ${coworker.name}
+      this.dom.coworkers[i].innerHTML = `Nom: ${coworker.name}
         <br/>Métier: ${coworker.job}
         <br/>Equilibre: <span id="coworkerBalance${i}">${coworker.balance}</span>
         <br/><input type="button" id="${buttonId}" value="Faire une pause" onClick="onCoworkerClicked(${i})" />`;
       i++;
     });
-    this.dom.coworkers.innerHTML = coworkersHtml;
   }
 
   update(now) {
