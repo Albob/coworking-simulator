@@ -184,9 +184,7 @@ class Game {
     this.dom.coworkers.innerHTML = coworkersHtml;
   }
 
-  update() {
-    let now = performance.now();
-
+  update(now) {
     const deltaMs = now - this.lastUpdate;
     const ingameDeltaMs = deltaMs * kIngameTimeFactor;
 
@@ -295,14 +293,15 @@ function onLoad() {
   window.game = game;
   game = new Game();
 
-  function loop() {
-    game.update();
+  function loop(now) {
+    // use the optimum way to do a game loop. See Also: https://developer.mozilla.org/en-US/docs/Games/Anatomy
+    window.requestAnimationFrame(loop);
+    game.update(now);
     game.render();
-    setTimeout(loop);
   }
 
   game.render();
-  loop();
+  loop(performance.now());
 }
 
 window.addEventListener('load', onLoad)
