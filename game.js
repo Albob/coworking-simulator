@@ -1,4 +1,4 @@
-const kAppVersion = "0.0.3";
+const kAppVersion = "0.0.4";
 
 const kIngameTimeFactor = 1100;
 const kBalancePerHour = 32;
@@ -138,6 +138,21 @@ class Coworker {
     this.balance = 0;
     this.isWorking = true;
   }
+
+  balanceAsText() {
+    const nbBlocks = Math.round(Math.abs(this.balance) / 10);
+    const blocks = ''.padEnd(nbBlocks, '#');
+
+    if (this.balance < 0) {
+      return `[${blocks.padStart(10, '_')}+__________]`;
+    }
+
+    if (this.balance > 0) {
+      return `[__________+${blocks.padEnd(10, '_')}]`;
+    }
+
+    return `[__________+__________}]`;
+  }
 }
 
 class Dom {
@@ -185,10 +200,13 @@ class Game {
     for (let i = 0; i < place.capacity; ++i) {
       if (i < this.coworkers.length) {
         const coworker = this.coworkers[i];
-        const buttonText = coworker.isWorking ? 'Faire une pause' : 'Travailler';
-        this.dom.coworkers[i].innerHTML = `Nom: ${coworker.name}
-          <br/>Métier: ${coworker.job}
-          <br/>Equilibre: <span id="coworkerBalance${i}">${coworker.balance}</span>
+        const buttonText = coworker.isWorking ? 'Faire une pause 🎯' : 'Travailler 💼';
+        this.dom.coworkers[i].innerHTML = `<b>Nom:</b>
+          <br/>${coworker.name}
+          <br/><b>Métier:</b>
+          <br/>${coworker.job}
+          <br/><b>Equilibre:</b>
+          <br/><span id="coworkerBalance${i}">${coworker.balanceAsText()}</span>
           <br/><input type="button" id="toggleCoworker${i}" value="${buttonText}" onClick="onCoworkerClicked(${i})" />`;
       } else {
         this.dom.coworkers[i].innerHTML = "Vide";
@@ -282,9 +300,7 @@ class Game {
       let i = 0;
       this.coworkers.forEach(coworker => {
         const span = document.getElementById(`coworkerBalance${i}`);
-        const balance = Math.round(coworker.balance);
-        const sign = balance > 0 ? '+' : ''; // negative numbers already display a minus sign
-        span.innerText = `${sign}${balance}`;
+        span.innerText = coworker.balanceAsText();
         i++;
       });
     }
@@ -304,7 +320,7 @@ function onCoworkerClicked(index) {
 
   const buttonId = `toggleCoworker${index}`;
   const button = document.getElementById(buttonId);
-  button.setAttribute('value', coworker.isWorking ? 'Faire une pause' : 'Travailler');
+  button.setAttribute('value', coworker.isWorking ? 'Faire une pause 🎯' : 'Travailler 💼');
 }
 
 function onLoad() {
