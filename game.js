@@ -182,21 +182,24 @@ class Game {
       Charge: <span id="place_charge">${this.coworkers.length}/${place.capacity}</span>`;
 
     // Coworkers
-    let i = 0;
-    this.coworkers.forEach(coworker => {
-      const buttonId = `toggleCoworker${i}`;
-      const buttonText = coworker.isWorking ? 'Faire une pause' : 'Travailler';
-      this.dom.coworkers[i].innerHTML = `Nom: ${coworker.name}
-        <br/>Métier: ${coworker.job}
-        <br/>Equilibre: <span id="coworkerBalance${i}">${coworker.balance}</span>
-        <br/><input type="button" id="${buttonId}" value="${buttonText}" onClick="onCoworkerClicked(${i})" />`;
-      i++;
-    });
+    for (let i = 0; i < place.capacity; ++i) {
+      if (i < this.coworkers.length) {
+        const coworker = this.coworkers[i];
+        const buttonText = coworker.isWorking ? 'Faire une pause' : 'Travailler';
+        this.dom.coworkers[i].innerHTML = `Nom: ${coworker.name}
+          <br/>Métier: ${coworker.job}
+          <br/>Equilibre: <span id="coworkerBalance${i}">${coworker.balance}</span>
+          <br/><input type="button" id="toggleCoworker${i}" value="${buttonText}" onClick="onCoworkerClicked(${i})" />`;
+      } else {
+        this.dom.coworkers[i].innerHTML = "Vide";
+      }
+    }
   }
 
   update(now) {
     const deltaMs = now - this.lastUpdate;
     const ingameDeltaMs = deltaMs * kIngameTimeFactor;
+    const place = kPlaces[this.level];
 
     // Update clock / time of day
     {
@@ -206,13 +209,15 @@ class Game {
         this.logEvent(`La Capsule fait parler d'elle et un nouveau coworker rejoint l'association!`);
         this.day += 1;
         this.clockMs = millisecondsFromHours(kFirstHour);
+
         // add a new coworker
-        {
+        if (this.coworkers.length < place.capacity) {
           const newbie = new Coworker();
           this.coworkers.push(newbie);
           this.money += kMembershipCost;
           this.refreshHtml();
         }
+
         now = performance.now();
       } else {
         this.clockMs += ingameDeltaMs;
@@ -221,7 +226,8 @@ class Game {
 
     // Update work balance
     {
-      const place = kPlaces[this.level];
+      const nbCoworkersBefore = this.coworkers.length;
+
       this.coworkers = this.coworkers.filter(worker => {
         const factor = worker.isWorking ? 1 : -1;
         // const effect = worker.isWorking ? place.equipementRate : place.cosyRate;
@@ -238,9 +244,12 @@ class Game {
         return true
       });
 
-      if (this.coworkers.length == 0) {
+      const nbCoworkersAfter = this.coworkers.length;
+      if (nbCoworkersAfter == 0) {
         window.location.replace("game_over.html");
         return;
+      } else if (nbCoworkersAfter != nbCoworkersBefore) {
+        this.refreshHtml();
       }
     }
 
