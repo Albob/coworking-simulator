@@ -210,7 +210,7 @@ class Game {
         {
           const newbie = new Coworker();
           this.coworkers.push(newbie);
-          this.money += 30;
+          this.money += kMembershipCost;
           this.refreshHtml();
         }
         now = performance.now();
