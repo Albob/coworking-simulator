@@ -34,42 +34,40 @@ const kPlaces = [
 ];
 
 const kCoworkerFirstNames = [
-  ['Alexandra', 'F'],
-  ['Alexis', 'M'],
-  ['Anthony', 'M'],
-  ['Benjamin', 'M'],
-  ['Chloé', 'F'],
-  ['Christine', 'F'],
-  ['David', 'M'],
-  ['Elise', 'F'],
-  ['Emilie', 'F'],
-  ['Gael', 'M'],
-  ['Guillaume', 'M'],
-  ['Julien', 'F'],
-  ['Manon', 'F'],
-  ['Margaux', 'F'],
-  ['Nicolas', 'M'],
-  ['Nolwenn', 'F'],
-  ['Paul', 'M'],
-  ['Philippe', 'M'],
-  ['Pierre-Arnaud', 'M'],
-  ['Pierre-Francois', 'M'],
-  ['Pierre-Louis', 'M'],
+  ['Alexandra Lareine', 'F'],
+  ['Alexis Bouchouille', 'M'],
+  ['Anthony Loyer', 'M'],
+  ['Benjamin Dantesque', 'M'],
+  ['Chloé Basque', 'F'],
+  ['Christine Séjoune', 'F'],
+  ['David Teutchengue', 'M'],
+  ['Elise Brulot', 'F'],
+  ['Emilie Dezurich', 'F'],
+  ['Gaël Leprince', 'M'],
+  ['Guillaume Meunarde', 'M'],
+  ['Julien Bruxelles', 'F'],
+  ['Manon Facheuse', 'F'],
+  ['Margouche Claudel', 'F'],
+  ['Nicolas Gilette', 'M'],
+  ['Nolwenn Tripp', 'F'],
+  ['Paul Cluzet', 'M'],
+  ['Philippe Brenardreau', 'M'],
+  ['Pierre-Arnaud Brioche', 'M'],
+  ['Pierre-Francois Berurier', 'M'],
+  ['Pierre-Louis Labenne', 'M'],
   ['Pierre', 'M'],
-  ['Sandra', 'F'],
-  ['Sophie', 'F'],
-  ['Yannick', 'F'],
+  ['Sandra Maison', 'F'],
 ];
 
 const kCoworkerLastNames = [
   'Basque',
   'Bouchouille',
-  'Clouzot',
+  '',
   'Gilette',
-  'Labenne',
-  'Liroy',
-  'Séjoune',
-  'Tchengue-a',
+  '',
+  '',
+  '',
+  '',
   'Valpouche',
 ];
 
@@ -125,14 +123,12 @@ const kJobAdjectives = [
 
 class Coworker {
   constructor() {
-    const firstNameAndSex = randomElementIn(kCoworkerFirstNames);
-    const firstName = firstNameAndSex[0];
-    const sex = firstNameAndSex[1];
-
-    this.name = `${firstName} ${randomElementIn(kCoworkerLastNames)}.`;
-
+    const nameAndSex = randomElementIn(kCoworkerFirstNames);
+    const sex = nameAndSex[1];
     const jobTitle = randomElementIn(kJobs)[sex == 'M' ? 0 : 1];
     const jobAdjective = randomElementIn(kJobAdjectives)[sex == 'M' ? 0 : 1];
+
+    this.name = nameAndSex[0];
     this.job = `${jobTitle} ${jobAdjective}`;
 
     this.balance = 0;
