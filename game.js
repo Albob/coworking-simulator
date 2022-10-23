@@ -260,7 +260,8 @@ class Game {
 
       const nbCoworkersAfter = this.coworkers.length;
       if (nbCoworkersAfter == 0) {
-        window.location.replace("game_over.html");
+        const nightOption = useNightMode() ? "?nightmode" : "";
+        window.location.replace(`game_over.html${nightOption}`);
         return;
       } else if (nbCoworkersAfter != nbCoworkersBefore) {
         this.refreshHtml();
@@ -319,7 +320,19 @@ function onCoworkerClicked(index) {
   button.setAttribute('value', coworker.isWorking ? 'Faire une pause 🎯' : 'Travailler 💼');
 }
 
+function useNightMode() {
+  const searchParams = new URL(document.URL).searchParams;
+  const nightMode = searchParams.has('nightmode');
+
+  return nightMode;
+}
+
 function onLoad() {
+  if (useNightMode()) {
+    const body = document.getElementsByTagName('body')[0];
+    body.className = 'night';
+  }
+
   window.onCoworkerClicked = onCoworkerClicked;
   window.game = game;
   game = new Game();
