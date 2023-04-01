@@ -59,18 +59,6 @@ const kCoworkerFirstNames = [
   ['Sandra Maison', 'F'],
 ];
 
-const kCoworkerLastNames = [
-  'Basque',
-  'Bouchouille',
-  '',
-  'Gilette',
-  '',
-  '',
-  '',
-  '',
-  'Valpouche',
-];
-
 const kJobs = [
   ['Influenceur', 'Influenceuse'],
   ['Developpeur', 'Developpeuse'],
