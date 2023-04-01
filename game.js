@@ -40,7 +40,7 @@ const kCoworkerFirstNames = [
   ['Benjamin Dantesque', 'M'],
   ['Chloé Basque', 'F'],
   ['Christine Séjoune', 'F'],
-  ['David Teutchengue', 'M'],
+  ['David Tchernia', 'M'],
   ['Elise Brulot', 'F'],
   ['Emilie Dezurich', 'F'],
   ['Gaël Leprince', 'M'],
