@@ -1,7 +1,7 @@
 const kAppVersion = "0.0.4";
 
 const kIngameTimeFactor = 1100;
-const kBalancePerHour = 32;
+const kBalancePerHour = 16;
 const kMoneyPerHour = 1;
 const kMembershipCost = 35;
 const kFirstHour = 8;
@@ -119,23 +119,22 @@ class Coworker {
     this.name = nameAndSex[0];
     this.job = `${jobTitle} ${jobAdjective}`;
 
-    this.balance = 0;
+    this.balance = 100;
     this.isWorking = true;
   }
 
+  balanceAsEmoji() {
+    const faces = ['😁', '😄', '😃', '😀', '🙂', '😕', '😟', '😰', '🥵', '☠️'].reverse();
+    const faceIndex = Math.round((faces.length - 1) * this.balance / 100);
+    return faces[faceIndex];
+  }
+
   balanceAsText() {
-    const nbBlocks = Math.round(Math.abs(this.balance) / 10);
+    const maxBlocks = 20;
+    const nbBlocks = Math.round(this.balance / 100 * maxBlocks);
     const blocks = ''.padEnd(nbBlocks, '#');
 
-    if (this.balance < 0) {
-      return `[${blocks.padStart(10, '_')}+__________]`;
-    }
-
-    if (this.balance > 0) {
-      return `[__________+${blocks.padEnd(10, '_')}]`;
-    }
-
-    return `[__________+__________}]`;
+    return `[${blocks.padEnd(maxBlocks, '_')}]`;
   }
 }
 
@@ -189,7 +188,7 @@ class Game {
           <br/>${coworker.name}
           <br/><b>Métier:</b>
           <br/>${coworker.job}
-          <br/><b>Equilibre:</b>
+          <br/><b>Equilibre:</b> <span id="coworkerEmoji${i}">${coworker.balanceAsEmoji()}</span>
           <br/><span id="coworkerBalance${i}">${coworker.balanceAsText()}</span>
           <br/><input type="button" id="toggleCoworker${i}" value="${buttonText}" onClick="onCoworkerClicked(${i})" />`;
       } else {
@@ -231,16 +230,18 @@ class Game {
       const nbCoworkersBefore = this.coworkers.length;
 
       this.coworkers = this.coworkers.filter(worker => {
-        const factor = worker.isWorking ? 1 : -1;
-        // const effect = worker.isWorking ? place.equipementRate : place.cosyRate;
+        const factor = worker.isWorking ? -1 : 1;
         worker.balance += factor * ingameDeltaMs * (kBalancePerHour / (3600000));
 
-        if (Math.abs(worker.balance) > 100) {
-          const cause = worker.balance > 0 ? 'travail' : 'glandouille';
-          this.logEvent(`${worker.name} a fait un surmenage par excès de ${cause}`);
+        if (worker.balance <= 0) {
+          this.logEvent(`${worker.name} a fait un surmenage`);
           this.logEvent(`${worker.name} demande un remboursement de sa cotisation. Vous perdez ${kMembershipCost}€`);
           this.money -= kMembershipCost;
           return false;
+        }
+
+        if (worker.balance >= 100) {
+          worker.isWorking = true;
         }
 
         return true
@@ -284,8 +285,10 @@ class Game {
     {
       let i = 0;
       this.coworkers.forEach(coworker => {
-        const span = document.getElementById(`coworkerBalance${i}`);
-        span.innerText = coworker.balanceAsText();
+        const balanceSpan = document.getElementById(`coworkerBalance${i}`);
+        balanceSpan.innerText = coworker.balanceAsText();
+        const emojiSpan = document.getElementById(`coworkerEmoji${i}`);
+        emojiSpan.innerText = coworker.balanceAsEmoji();
         i++;
       });
     }
