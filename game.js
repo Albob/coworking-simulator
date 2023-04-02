@@ -33,7 +33,7 @@ const kPlaces = [
   new Place("La Capsule II", 3, 4, 'Les meilleures conditions, à la fois pour travailler et pour prendre une pause', 30),
 ];
 
-const kCoworkerFirstNames = [
+const kCoworkerNames = [
   ['Alexandra Lareine', 'F'],
   ['Alexis Bouchouille', 'M'],
   ['Anthony Loyer', 'M'],
@@ -111,7 +111,7 @@ const kJobAdjectives = [
 
 class Coworker {
   constructor() {
-    const nameAndSex = randomElementIn(kCoworkerFirstNames);
+    const nameAndSex = randomElementIn(kCoworkerNames);
     const sex = nameAndSex[1];
     const jobTitle = randomElementIn(kJobs)[sex == 'M' ? 0 : 1];
     const jobAdjective = randomElementIn(kJobAdjectives)[sex == 'M' ? 0 : 1];
