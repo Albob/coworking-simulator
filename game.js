@@ -1,7 +1,6 @@
 const kIngameTimeFactor = 1100;
 const kMotivationPerHour = 16;
 const kMoneyPerHour = 1;
-const kMembershipCost = 35;
 const kFirstHour = 8;
 const kLastHour = 18;
 
@@ -25,10 +24,10 @@ class Place {
 }
 
 const kPlaces = [
-  new Place("Bar la Licorne", 2, 1, 'Un endroit convivial mais bruyant.', 3),
+  new Place("Bar la Licorne", 2, 1, 'Un endroit convivial mais bruyant.', 4),
   new Place("Dans un local prêté par un ami", 1, 2, 'Un endroit pratique mais un peu austère.', 8),
-  new Place("À la CCI", 2, 3, 'Un endroit qui permet de se concentrer et aussi de se détendre.', 15),
-  new Place("La Capsule II", 3, 4, 'Les meilleures conditions, à la fois pour travailler et pour prendre une pause', 30),
+  new Place("À la CCI", 2, 3, 'Un endroit qui permet de se concentrer et aussi de se détendre.', 16),
+  new Place("La Capsule II", 3, 4, 'Les meilleures conditions, à la fois pour travailler et pour prendre une pause', 32),
 ];
 
 const kCoworkerNames = [
@@ -213,7 +212,6 @@ class Game {
         if (this.coworkers.length < place.capacity) {
           const newbie = new Coworker();
           this.coworkers.push(newbie);
-          this.money += kMembershipCost;
           this.refreshHtml();
         }
 
