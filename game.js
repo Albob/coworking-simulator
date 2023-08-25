@@ -1,5 +1,3 @@
-const kAppVersion = "0.0.4";
-
 const kIngameTimeFactor = 1100;
 const kBalancePerHour = 16;
 const kMoneyPerHour = 1;
