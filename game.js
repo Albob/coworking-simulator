@@ -1,9 +1,6 @@
-const kAppVersion = "0.0.4";
-
 const kIngameTimeFactor = 1100;
-const kBalancePerHour = 16;
+const kMotivationPerHour = 16;
 const kMoneyPerHour = 1;
-const kMembershipCost = 35;
 const kFirstHour = 8;
 const kLastHour = 18;
 
@@ -27,10 +24,10 @@ class Place {
 }
 
 const kPlaces = [
-  new Place("Bar la Licorne", 2, 1, 'Un endroit convivial mais bruyant.', 3),
+  new Place("Bar la Licorne", 2, 1, 'Un endroit convivial mais bruyant.', 4),
   new Place("Dans un local prêté par un ami", 1, 2, 'Un endroit pratique mais un peu austère.', 8),
-  new Place("À la CCI", 2, 3, 'Un endroit qui permet de se concentrer et aussi de se détendre.', 15),
-  new Place("La Capsule II", 3, 4, 'Les meilleures conditions, à la fois pour travailler et pour prendre une pause', 30),
+  new Place("À la CCI", 2, 3, 'Un endroit qui permet de se concentrer et aussi de se détendre.', 16),
+  new Place("La Capsule II", 3, 4, 'Les meilleures conditions, à la fois pour travailler et pour prendre une pause', 32),
 ];
 
 const kCoworkerNames = [
@@ -119,19 +116,19 @@ class Coworker {
     this.name = nameAndSex[0];
     this.job = `${jobTitle} ${jobAdjective}`;
 
-    this.balance = 100;
+    this.motivation = 100;
     this.isWorking = true;
   }
 
-  balanceAsEmoji() {
+  motivationAsEmoji() {
     const faces = ['😁', '😄', '😃', '😀', '🙂', '😕', '😟', '😰', '🥵', '☠️'].reverse();
-    const faceIndex = Math.round((faces.length - 1) * this.balance / 100);
+    const faceIndex = Math.round((faces.length - 1) * this.motivation / 100);
     return faces[faceIndex];
   }
 
-  balanceAsText() {
+  motivationAsText() {
     const maxBlocks = 20;
-    const nbBlocks = Math.round(this.balance / 100 * maxBlocks);
+    const nbBlocks = Math.round(this.motivation / 100 * maxBlocks);
     const blocks = ''.padEnd(nbBlocks, '#');
 
     return `[${blocks.padEnd(maxBlocks, '_')}]`;
@@ -188,8 +185,8 @@ class Game {
           <br/>${coworker.name}
           <br/><b>Métier:</b>
           <br/>${coworker.job}
-          <br/><b>Equilibre:</b> <span id="coworkerEmoji${i}">${coworker.balanceAsEmoji()}</span>
-          <br/><span id="coworkerBalance${i}">${coworker.balanceAsText()}</span>
+          <br/><b>Motivation:</b> <span id="coworkerEmoji${i}">${coworker.motivationAsEmoji()}</span>
+          <br/><span id="coworkerMotivation${i}">${coworker.motivationAsText()}</span>
           <br/><input type="button" id="toggleCoworker${i}" value="${buttonText}" onClick="onCoworkerClicked(${i})" />`;
       } else {
         this.dom.coworkers[i].innerHTML = "Vide";
@@ -215,7 +212,6 @@ class Game {
         if (this.coworkers.length < place.capacity) {
           const newbie = new Coworker();
           this.coworkers.push(newbie);
-          this.money += kMembershipCost;
           this.refreshHtml();
         }
 
@@ -225,18 +221,21 @@ class Game {
       }
     }
 
-    // Update work balance
+    // Update work motivation
     {
       this.coworkers.forEach((worker, worker_index) => {
-        const is_burntout = (worker.balance == 0);
+        const is_burntout = (worker.motivation == 0);
 
-        const factor = worker.isWorking ? -1 : 1;
-        worker.balance = Math.max(0, worker.balance + factor * ingameDeltaMs * (kBalancePerHour / (3600000)));
+        const factor = worker.isWorking ? -1 : 3;
+        worker.motivation = Math.max(0, worker.motivation + factor * ingameDeltaMs * (kMotivationPerHour / (3600000)));
 
-        if (worker.balance == 0 && !is_burntout) {
+        if (worker.motivation == 0 && !is_burntout) {
           this.logEvent(`${worker.name} est en surmenage...`);
-        } else if (worker.balance >= 100) {
-          onCoworkerClicked(worker_index); // force switch working state and update buttons and log event
+        } else if (worker.motivation >= 100) {
+          worker.motivation = 100;
+          if (!worker.isWorking) {
+            onCoworkerClicked(worker_index); // force switch working state and update buttons and log event
+          }
         }
       });
     }
@@ -269,10 +268,10 @@ class Game {
     {
       let i = 0;
       this.coworkers.forEach(coworker => {
-        const balanceSpan = document.getElementById(`coworkerBalance${i}`);
-        balanceSpan.innerText = coworker.balanceAsText();
+        const motivationSpan = document.getElementById(`coworkerMotivation${i}`);
+        motivationSpan.innerText = coworker.motivationAsText();
         const emojiSpan = document.getElementById(`coworkerEmoji${i}`);
-        emojiSpan.innerText = coworker.balanceAsEmoji();
+        emojiSpan.innerText = coworker.motivationAsEmoji();
         i++;
       });
     }
@@ -292,7 +291,8 @@ function onCoworkerClicked(index) {
 
   const buttonId = `toggleCoworker${index}`;
   const button = document.getElementById(buttonId);
-  button.setAttribute('value', coworker.isWorking ? 'Faire une pause 🎯' : 'Travailler 💼');
+  button.setAttribute('value', coworker.isWorking ? 'Faire une pause 🎯' : '💪 Énergisation ! 💪');
+  button.disabled = !coworker.isWorking;
 }
 
 function useNightMode() {
