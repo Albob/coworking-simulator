@@ -236,7 +236,10 @@ class Game {
         if (worker.balance == 0 && !is_burntout) {
           this.logEvent(`${worker.name} est en surmenage...`);
         } else if (worker.balance >= 100) {
-          onCoworkerClicked(worker_index); // force switch working state and update buttons and log event
+          worker.balance = 100;
+          if (!worker.isWorking) {
+            onCoworkerClicked(worker_index); // force switch working state and update buttons and log event
+          }
         }
       });
     }
