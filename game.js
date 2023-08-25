@@ -1,7 +1,7 @@
 const kAppVersion = "0.0.4";
 
 const kIngameTimeFactor = 1100;
-const kBalancePerHour = 32;
+const kBalancePerHour = 16;
 const kMoneyPerHour = 1;
 const kMembershipCost = 35;
 const kFirstHour = 8;
@@ -33,44 +33,30 @@ const kPlaces = [
   new Place("La Capsule II", 3, 4, 'Les meilleures conditions, à la fois pour travailler et pour prendre une pause', 30),
 ];
 
-const kCoworkerFirstNames = [
-  ['Alexandra', 'F'],
-  ['Alexis', 'M'],
-  ['Anthony', 'M'],
-  ['Benjamin', 'M'],
-  ['Chloé', 'F'],
-  ['Christine', 'F'],
-  ['David', 'M'],
-  ['Elise', 'F'],
-  ['Emilie', 'F'],
-  ['Gael', 'M'],
-  ['Guillaume', 'M'],
-  ['Julien', 'F'],
-  ['Manon', 'F'],
-  ['Margaux', 'F'],
-  ['Nicolas', 'M'],
-  ['Nolwenn', 'F'],
-  ['Paul', 'M'],
-  ['Philippe', 'M'],
-  ['Pierre-Arnaud', 'M'],
-  ['Pierre-Francois', 'M'],
-  ['Pierre-Louis', 'M'],
+const kCoworkerNames = [
+  ['Alexandra Lareine', 'F'],
+  ['Alexis Bouchouille', 'M'],
+  ['Anthony Loyer', 'M'],
+  ['Benjamin Dantesque', 'M'],
+  ['Chloé Basque', 'F'],
+  ['Christine Séjoune', 'F'],
+  ['David Tchernia', 'M'],
+  ['Elise Brulot', 'F'],
+  ['Emilie Dezurich', 'F'],
+  ['Gaël Leprince', 'M'],
+  ['Guillaume Meunarde', 'M'],
+  ['Julien Bruxelles', 'F'],
+  ['Manon Facheuse', 'F'],
+  ['Margouche Claudel', 'F'],
+  ['Nicolas Gilette', 'M'],
+  ['Nolwenn Tripp', 'F'],
+  ['Paul Cluzet', 'M'],
+  ['Philippe Brenardreau', 'M'],
+  ['Pierre-Arnaud Brioche', 'M'],
+  ['Pierre-Francois Berurier', 'M'],
+  ['Pierre-Louis Labenne', 'M'],
   ['Pierre', 'M'],
-  ['Sandra', 'F'],
-  ['Sophie', 'F'],
-  ['Yannick', 'F'],
-];
-
-const kCoworkerLastNames = [
-  'Basque',
-  'Bouchouille',
-  'Clouzot',
-  'Gilette',
-  'Labenne',
-  'Liroy',
-  'Séjoune',
-  'Tchengue-a',
-  'Valpouche',
+  ['Sandra Maison', 'F'],
 ];
 
 const kJobs = [
@@ -125,33 +111,30 @@ const kJobAdjectives = [
 
 class Coworker {
   constructor() {
-    const firstNameAndSex = randomElementIn(kCoworkerFirstNames);
-    const firstName = firstNameAndSex[0];
-    const sex = firstNameAndSex[1];
-
-    this.name = `${firstName} ${randomElementIn(kCoworkerLastNames)}.`;
-
+    const nameAndSex = randomElementIn(kCoworkerNames);
+    const sex = nameAndSex[1];
     const jobTitle = randomElementIn(kJobs)[sex == 'M' ? 0 : 1];
     const jobAdjective = randomElementIn(kJobAdjectives)[sex == 'M' ? 0 : 1];
+
+    this.name = nameAndSex[0];
     this.job = `${jobTitle} ${jobAdjective}`;
 
-    this.balance = 0;
+    this.balance = 100;
     this.isWorking = true;
   }
 
+  balanceAsEmoji() {
+    const faces = ['😁', '😄', '😃', '😀', '🙂', '😕', '😟', '😰', '🥵', '☠️'].reverse();
+    const faceIndex = Math.round((faces.length - 1) * this.balance / 100);
+    return faces[faceIndex];
+  }
+
   balanceAsText() {
-    const nbBlocks = Math.round(Math.abs(this.balance) / 10);
+    const maxBlocks = 20;
+    const nbBlocks = Math.round(this.balance / 100 * maxBlocks);
     const blocks = ''.padEnd(nbBlocks, '#');
 
-    if (this.balance < 0) {
-      return `[${blocks.padStart(10, '_')}+__________]`;
-    }
-
-    if (this.balance > 0) {
-      return `[__________+${blocks.padEnd(10, '_')}]`;
-    }
-
-    return `[__________+__________}]`;
+    return `[${blocks.padEnd(maxBlocks, '_')}]`;
   }
 }
 
@@ -205,7 +188,7 @@ class Game {
           <br/>${coworker.name}
           <br/><b>Métier:</b>
           <br/>${coworker.job}
-          <br/><b>Equilibre:</b>
+          <br/><b>Equilibre:</b> <span id="coworkerEmoji${i}">${coworker.balanceAsEmoji()}</span>
           <br/><span id="coworkerBalance${i}">${coworker.balanceAsText()}</span>
           <br/><input type="button" id="toggleCoworker${i}" value="${buttonText}" onClick="onCoworkerClicked(${i})" />`;
       } else {
@@ -244,31 +227,18 @@ class Game {
 
     // Update work balance
     {
-      const nbCoworkersBefore = this.coworkers.length;
+      this.coworkers.forEach((worker, worker_index) => {
+        const is_burntout = (worker.balance == 0);
 
-      this.coworkers = this.coworkers.filter(worker => {
-        const factor = worker.isWorking ? 1 : -1;
-        // const effect = worker.isWorking ? place.equipementRate : place.cosyRate;
-        worker.balance += factor * ingameDeltaMs * (kBalancePerHour / (3600000));
+        const factor = worker.isWorking ? -1 : 1;
+        worker.balance = Math.max(0, worker.balance + factor * ingameDeltaMs * (kBalancePerHour / (3600000)));
 
-        if (Math.abs(worker.balance) > 100) {
-          const cause = worker.balance > 0 ? 'travail' : 'glandouille';
-          this.logEvent(`${worker.name} a fait un surmenage par excès de ${cause}`);
-          this.logEvent(`${worker.name} demande un remboursement de sa cotisation. Vous perdez ${kMembershipCost}€`);
-          this.money -= kMembershipCost;
-          return false;
+        if (worker.balance == 0 && !is_burntout) {
+          this.logEvent(`${worker.name} est en surmenage...`);
+        } else if (worker.balance >= 100) {
+          onCoworkerClicked(worker_index); // force switch working state and update buttons and log event
         }
-
-        return true
       });
-
-      const nbCoworkersAfter = this.coworkers.length;
-      if (nbCoworkersAfter == 0) {
-        window.location.replace("game_over.html");
-        return;
-      } else if (nbCoworkersAfter != nbCoworkersBefore) {
-        this.refreshHtml();
-      }
     }
 
     // Update money won.
@@ -299,8 +269,10 @@ class Game {
     {
       let i = 0;
       this.coworkers.forEach(coworker => {
-        const span = document.getElementById(`coworkerBalance${i}`);
-        span.innerText = coworker.balanceAsText();
+        const balanceSpan = document.getElementById(`coworkerBalance${i}`);
+        balanceSpan.innerText = coworker.balanceAsText();
+        const emojiSpan = document.getElementById(`coworkerEmoji${i}`);
+        emojiSpan.innerText = coworker.balanceAsEmoji();
         i++;
       });
     }
@@ -323,7 +295,19 @@ function onCoworkerClicked(index) {
   button.setAttribute('value', coworker.isWorking ? 'Faire une pause 🎯' : 'Travailler 💼');
 }
 
+function useNightMode() {
+  const searchParams = new URL(document.URL).searchParams;
+  const nightMode = searchParams.has('nightmode');
+
+  return nightMode;
+}
+
 function onLoad() {
+  if (useNightMode()) {
+    const body = document.getElementsByTagName('body')[0];
+    body.className = 'night';
+  }
+
   window.onCoworkerClicked = onCoworkerClicked;
   window.game = game;
   game = new Game();
@@ -339,4 +323,4 @@ function onLoad() {
   loop(performance.now());
 }
 
-window.addEventListener('load', onLoad)
+window.addEventListener('load', onLoad);
