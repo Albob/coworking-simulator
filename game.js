@@ -227,34 +227,18 @@ class Game {
 
     // Update work balance
     {
-      const nbCoworkersBefore = this.coworkers.length;
+      this.coworkers.forEach((worker, worker_index) => {
+        const is_burntout = (worker.balance == 0);
 
-      this.coworkers = this.coworkers.filter(worker => {
         const factor = worker.isWorking ? -1 : 1;
-        worker.balance += factor * ingameDeltaMs * (kBalancePerHour / (3600000));
+        worker.balance = Math.max(0, worker.balance + factor * ingameDeltaMs * (kBalancePerHour / (3600000)));
 
-        if (worker.balance <= 0) {
-          this.logEvent(`${worker.name} a fait un surmenage`);
-          this.logEvent(`${worker.name} demande un remboursement de sa cotisation. Vous perdez ${kMembershipCost}€`);
-          this.money -= kMembershipCost;
-          return false;
+        if (worker.balance == 0 && !is_burntout) {
+          this.logEvent(`${worker.name} est en surmenage...`);
+        } else if (worker.balance >= 100) {
+          onCoworkerClicked(worker_index); // force switch working state and update buttons and log event
         }
-
-        if (worker.balance >= 100) {
-          worker.isWorking = true;
-        }
-
-        return true
       });
-
-      const nbCoworkersAfter = this.coworkers.length;
-      if (nbCoworkersAfter == 0) {
-        const nightOption = useNightMode() ? "?nightmode" : "";
-        window.location.replace(`game_over.html${nightOption}`);
-        return;
-      } else if (nbCoworkersAfter != nbCoworkersBefore) {
-        this.refreshHtml();
-      }
     }
 
     // Update money won.
@@ -339,4 +323,4 @@ function onLoad() {
   loop(performance.now());
 }
 
-window.addEventListener('load', onLoad)
+window.addEventListener('load', onLoad);
