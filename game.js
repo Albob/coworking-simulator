@@ -191,6 +191,13 @@ class Game {
       alert("Pas assez d'argent");
       return;
     }
+
+    const place = kPlaces[this.level];
+    if (place.capacity <= this.coworkers.length) {
+      alert("Plus de place! Déménagez pour augmenter la capacité");
+      return;
+    }
+
     this.money -= priceOfNewCoworker;
     priceOfNewCoworker = Math.ceil(priceOfNewCoworker * 1.5);
     document.getElementById('add_coworker').setAttribute('value', `Ajouter un coworker (${priceOfNewCoworker}€)`);
