@@ -6,19 +6,8 @@
   <title>Coworking Simulator</title>
   <script type="module" src="game.js"></script>
   <style>
-    .table_center {
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    .person {
-      border: 1px black solid;
-      border-collapse: collapse;
-    }
-
-    .night .person {
-      border: 1px white solid;
-      border-collapse: collapse;
+    .title {
+      font-weight: bold;
     }
 
     body {
@@ -51,90 +40,55 @@
 <body>
   <h1>Coworking Simulator</h1>
 
-  <table class="table_center">
-    <colgroup>
-      <col style="width: 20%;">
-      <col style="width: 20%;">
-      <col style="width: 20%;">
-      <col style="width: 20%;">
-      <col style="width: 20%;">
-    </colgroup>
+  <div id="main">
+    <p>
+      <span class="title">Lieu:&nbsp;</span>
+      <span id="place">La maison</span>
+    </p>
 
-    <tr>
-      <td colspan="2">
-        <h2>Lieu</h2>
-        <p id="place">La maison</p>
-      </td>
-      <td>
-        <h2>Calendrier</h2>
-        <p id="calendar">Jour 1</p>
-      </td>
-      <td>
-        <h2>Horloge</h2>
-        <p id="clock">7:00</p>
-      </td>
-      <td>
-        <h2>Trésorerie</h2>
-        <p id="money">0€</p>
-      </td>
-    </tr>
+    <p>
+      <span class="title">Capacité:&nbsp;</span>
+      <span id="capacity">n/Max</span>
+    </p>
 
-    <tr>
-      <td colspan="5">
-        <h2>Coworkers</h2>
-      </td>
-    </tr>
-    <tr class="person">
-      <td class="person">
-        <p id="coworker0">poste 0</p>
-      </td>
-      <td class="person">
-        <p id="coworker1">poste 1</p>
-      </td>
-      <td class="person">
-        <p id="coworker2">poste 2</p>
-      </td>
-      <td class="person">
-        <p id="coworker3">Débloqué au niveau 2</p>
-      </td>
-      <td class="person">
-        <p id="coworker4">Débloqué au niveau 2</p>
-      </td>
-    </tr>
-    <tr class="person">
-      <td class="person">
-        <p id="coworker5">Débloqué au niveau 2</p>
-      </td>
-      <td class="person">
-        <p id="coworker6">Débloqué au niveau 2</p>
-      </td>
-      <td class="person">
-        <p id="coworker7">Débloqué au niveau 2</p>
-      </td>
-      <td class="person">
-        <p id="coworker8">Débloqué au niveau 2</p>
-      </td>
-      <td class="person">
-        <p id="coworker9">Débloqué au niveau 2</p>
-      </td>
-    </tr>
+    <p>
+      <span class="title">Trésorerie:&nbsp;</span>
+      <span id="money">0€</span>
+    </p>
 
-    <tr>
-      <td colspan="5">
-        <h2>Boutique</h2>
-        <p id="shop"><i>Vide...</i></p>
-      </td>
-    </tr>
-  </table>
+    <p>
+      <span class="title">Coworkers:</span>
+    </p>
 
-  <div>
+    <div>
+      <p id="coworker0">poste 0</p>
+      <p id="coworker1">poste 1</p>
+      <p id="coworker2">poste 2</p>
+      <p id="coworker3">poste 3</p>
+      <!--
+        <p id="coworker4">poste 4</p>
+        <p id="coworker5">poste 5</p>
+        <p id="coworker6">poste 6</p>
+        <p id="coworker7">poste 7</p>
+        <p id="coworker8">poste 8</p>
+        <p id="coworker9">poste 9</p>
+      -->
+    </div>
+
+    <h2>Améliorations</h2>
+    <p id="shop">
+      <input type="button" id="add_coworker">
+    </p>
+  </div>
+
+  <div id="footer">
     <p style="float: left;">
       <span>Version 0.2.0</span>
       <span>Dernière update 23/08/2023</span>
     </p>
 
     <p style="float: right;">
-      <span>Copyright <a href="abauchu.net">Alexis Bauchu</a> 2022-2023</span>
+      <span>Copyright <a href="https://abauchu.net">Alexis Bauchu</a> 2022-2023</span>
     </p>
   </div>
 </body>

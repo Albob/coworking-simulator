@@ -1,8 +1,8 @@
 const kIngameTimeFactor = 1100;
 const kMotivationPerHour = 16;
-const kMoneyPerHour = 1;
-const kFirstHour = 8;
-const kLastHour = 18;
+const kMoneyPerHour = 4;
+
+let priceOfNewCoworker = 35;
 
 function randomElementIn(collection) {
   const index = Math.floor(Math.random() * collection.length);
@@ -14,20 +14,18 @@ function millisecondsFromHours(hours) {
 }
 
 class Place {
-  constructor(place_name, cosy_rate, equipement_rate, place_description, capacity) {
+  constructor(place_name, place_description, capacity) {
     this.name = place_name;
-    this.cosyRate = cosy_rate;
-    this.equipementRate = equipement_rate;
     this.description = place_description;
     this.capacity = capacity;
   }
 }
 
 const kPlaces = [
-  new Place("Bar la Licorne", 2, 1, 'Un endroit convivial mais bruyant.', 4),
-  new Place("Dans un local prêté par un ami", 1, 2, 'Un endroit pratique mais un peu austère.', 8),
-  new Place("À la CCI", 2, 3, 'Un endroit qui permet de se concentrer et aussi de se détendre.', 16),
-  new Place("La Capsule II", 3, 4, 'Les meilleures conditions, à la fois pour travailler et pour prendre une pause', 32),
+  new Place(`Bar "La Licorne"`, 'Un endroit convivial mais bruyant.', 4),
+  new Place("Dans un local prêté par un ami", 'Un endroit pratique mais un peu austère.', 8),
+  new Place("À la CCI", 'Un endroit qui permet de se concentrer et aussi de se détendre.', 16),
+  new Place("La Capsule II", 'Les meilleures conditions, à la fois pour travailler et pour prendre une pause', 32),
 ];
 
 const kCoworkerNames = [
@@ -138,8 +136,7 @@ class Coworker {
 class Dom {
   constructor() {
     this.place = document.getElementById('place');
-    this.clock = document.getElementById('clock');
-    this.calendar = document.getElementById('calendar');
+    this.capacity = document.getElementById('capacity');
     this.coworkers = [
       document.getElementById('coworker0'),
       document.getElementById('coworker1'),
@@ -162,8 +159,7 @@ class Game {
     this.money = 0;
     this.level = 0;
     this.dom = new Dom();
-    this.clockMs = millisecondsFromHours(kFirstHour);
-    this.day = 1;
+    this.clockMs = 0;
     this.lastUpdate = performance.now();
 
     this.refreshHtml();
@@ -172,54 +168,40 @@ class Game {
   refreshHtml() {
     // Place
     const place = kPlaces[this.level];
-    this.dom.place.innerHTML = `Nom: ${place.name}<br/>
-      Description: ${place.description}<br/>
-      Charge: <span id="place_charge">${this.coworkers.length}/${place.capacity}</span>`;
+    this.dom.place.innerHTML = `${place.name}. ${place.description}.`;
+    this.dom.capacity.innerHTML = `${this.coworkers.length}/${place.capacity}`;
 
     // Coworkers
     for (let i = 0; i < place.capacity; ++i) {
       if (i < this.coworkers.length) {
         const coworker = this.coworkers[i];
         const buttonText = coworker.isWorking ? 'Faire une pause 🎯' : 'Travailler 💼';
-        this.dom.coworkers[i].innerHTML = `<b>Nom:</b>
-          <br/>${coworker.name}
-          <br/><b>Métier:</b>
-          <br/>${coworker.job}
-          <br/><b>Motivation:</b> <span id="coworkerEmoji${i}">${coworker.motivationAsEmoji()}</span>
-          <br/><span id="coworkerMotivation${i}">${coworker.motivationAsText()}</span>
-          <br/><input type="button" id="toggleCoworker${i}" value="${buttonText}" onClick="onCoworkerClicked(${i})" />`;
+        this.dom.coworkers[i].innerHTML = `<b>${coworker.name}</b>, ${coworker.job}.
+          <b>Motivation:</b> <span id="coworkerEmoji${i}">${coworker.motivationAsEmoji()}</span>
+          <span id="coworkerMotivation${i}">${coworker.motivationAsText()}</span>
+          <input type="button" id="toggleCoworker${i}" value="${buttonText}" onClick="onCoworkerClicked(${i})" />`;
       } else {
         this.dom.coworkers[i].innerHTML = "Vide";
       }
     }
   }
 
+  addCoworker() {
+    if (this.money < priceOfNewCoworker) {
+      alert("Pas assez d'argent");
+      return;
+    }
+    this.money -= priceOfNewCoworker;
+    priceOfNewCoworker = Math.ceil(priceOfNewCoworker * 1.5);
+    document.getElementById('add_coworker').setAttribute('value', `Ajouter un coworker (${priceOfNewCoworker}€)`);
+    this.coworkers.push(new Coworker());
+    this.refreshHtml();
+  }
+
   update(now) {
     const deltaMs = now - this.lastUpdate;
     const ingameDeltaMs = deltaMs * kIngameTimeFactor;
-    const place = kPlaces[this.level];
-
-    // Update clock / time of day
-    {
-      if (this.clockMs > millisecondsFromHours(kLastHour)) {
-        const displayTime = `${kLastHour.toString().padStart(2, '0')}:00`;
-        this.logEvent(`Fin de la journée #${this.day}, il est ${displayTime} !`);
-        this.logEvent(`La Capsule fait parler d'elle et un nouveau coworker rejoint l'association!`);
-        this.day += 1;
-        this.clockMs = millisecondsFromHours(kFirstHour);
-
-        // add a new coworker
-        if (this.coworkers.length < place.capacity) {
-          const newbie = new Coworker();
-          this.coworkers.push(newbie);
-          this.refreshHtml();
-        }
-
-        now = performance.now();
-      } else {
-        this.clockMs += ingameDeltaMs;
-      }
-    }
+    this.clockMs += ingameDeltaMs;
 
     // Update work motivation
     {
@@ -242,7 +224,8 @@ class Game {
 
     // Update money won.
     {
-      this.money += this.coworkers.length * ingameDeltaMs * (kMoneyPerHour / (3600000));
+      const active_workers = this.coworkers.reduce((count, worker) => count + (worker.isWorking ? 1 : 0), 0);
+      this.money += active_workers * ingameDeltaMs * (kMoneyPerHour / (3600000));
     }
 
     this.lastUpdate = now;
@@ -251,16 +234,8 @@ class Game {
   render() {
     {
       const place = kPlaces[this.level];
-      const chargeSpan = document.getElementById('place_charge');
+      const chargeSpan = document.getElementById('capacity');
       chargeSpan.innerHTML = `${this.coworkers.length}/${place.capacity}`;
-    }
-
-    {
-      const minutes = Math.floor(this.clockMs / (60000));
-      const displayHours = (Math.floor(minutes / 60) % 24).toString().padStart(2, '0');
-      const displayMinutes = (minutes % 60).toString().padStart(2, '0');
-      this.dom.calendar.innerText = `Jour ${this.day}`;
-      this.dom.clock.innerText = `${displayHours}:${displayMinutes}`;
     }
 
     this.dom.money.innerText = Math.floor(this.money) + "€";
@@ -308,9 +283,15 @@ function onLoad() {
     body.className = 'night';
   }
 
-  window.onCoworkerClicked = onCoworkerClicked;
-  window.game = game;
   game = new Game();
+  window.game = game;
+  window.onCoworkerClicked = onCoworkerClicked;
+
+  {
+    const button = document.getElementById('add_coworker');
+    button.addEventListener('click', () => game.addCoworker());
+    button.setAttribute('value', `Ajouter un coworker (${priceOfNewCoworker}€)`);
+  }
 
   function loop(now) {
     // use the optimum way to do a game loop. See Also: https://developer.mozilla.org/en-US/docs/Games/Anatomy
