@@ -231,8 +231,8 @@ class Game {
 
     // Update money won.
     {
-      const active_workers = this.coworkers.reduce((count, worker) => count + (worker.isWorking ? 1 : 0), 0);
-      this.money += active_workers * ingameDeltaMs * (kMoneyPerHour / (3600000));
+      const nb_active_workers = this.coworkers.reduce((count, worker) => count + (worker.isWorking && worker.motivation > 0 ? 1 : 0), 0);
+      this.money += nb_active_workers * ingameDeltaMs * (kMoneyPerHour / (3600000));
     }
 
     this.lastUpdate = now;
