@@ -139,15 +139,6 @@ class Dom {
     this.capacity = document.getElementById('capacity');
     this.coworkers = [
       document.getElementById('coworker0'),
-      document.getElementById('coworker1'),
-      document.getElementById('coworker2'),
-      document.getElementById('coworker3'),
-      document.getElementById('coworker4'),
-      document.getElementById('coworker5'),
-      document.getElementById('coworker6'),
-      document.getElementById('coworker7'),
-      document.getElementById('coworker8'),
-      document.getElementById('coworker9'),
     ];
     this.money = document.getElementById('money');
   }
@@ -176,12 +167,11 @@ class Game {
       if (i < this.coworkers.length) {
         const coworker = this.coworkers[i];
         const buttonText = coworker.isWorking ? 'Faire une pause 🎯' : 'Travailler 💼';
-        this.dom.coworkers[i].innerHTML = `<b>${coworker.name}</b>, ${coworker.job}.
-          <b>Motivation:</b> <span id="coworkerEmoji${i}">${coworker.motivationAsEmoji()}</span>
-          <span id="coworkerMotivation${i}">${coworker.motivationAsText()}</span>
+        this.dom.coworkers[i].innerHTML = `
+          <span class="emoji" id="coworkerEmoji${i}">${coworker.motivationAsEmoji()}</span>
+          <b>${coworker.name}</b>, ${coworker.job}.
+          <b>Motivation:</b> <span id="coworkerMotivation${i}">${coworker.motivationAsText()}</span>
           <input type="button" id="toggleCoworker${i}" value="${buttonText}" onClick="onCoworkerClicked(${i})" />`;
-      } else {
-        this.dom.coworkers[i].innerHTML = "Vide";
       }
     }
   }
@@ -200,9 +190,24 @@ class Game {
 
     this.money -= priceOfNewCoworker;
     priceOfNewCoworker = Math.ceil(priceOfNewCoworker * 1.5);
-    document.getElementById('add_coworker').setAttribute('value', `Ajouter un coworker (${priceOfNewCoworker}€)`);
+
     this.coworkers.push(new Coworker());
+
+    const coworkers_node = document.getElementById('coworkers');
+    const add_coworker_button = document.getElementById('add_coworker');
+    const new_coworker_node = document.createElement('p');
+    new_coworker_node.classList.add("person");
+    new_coworker_node.setAttribute("id", "coworker0");
+    coworkers_node.appendChild(new_coworker_node);
+    this.dom.coworkers.push(new_coworker_node);
+    coworkers_node.appendChild(add_coworker_button);
+
     this.refreshHtml();
+  }
+
+  setNewCoworkerPrice() {
+    const button = document.getElementById('add_coworker')
+    button.setAttribute('value', `Ajouter un coworker (${priceOfNewCoworker}€)`);
   }
 
   update(now) {
@@ -277,19 +282,7 @@ function onCoworkerClicked(index) {
   button.disabled = !coworker.isWorking;
 }
 
-function useNightMode() {
-  const searchParams = new URL(document.URL).searchParams;
-  const nightMode = searchParams.has('nightmode');
-
-  return nightMode;
-}
-
 function onLoad() {
-  if (useNightMode()) {
-    const body = document.getElementsByTagName('body')[0];
-    body.className = 'night';
-  }
-
   game = new Game();
   window.game = game;
   window.onCoworkerClicked = onCoworkerClicked;
@@ -297,7 +290,7 @@ function onLoad() {
   {
     const button = document.getElementById('add_coworker');
     button.addEventListener('click', () => game.addCoworker());
-    button.setAttribute('value', `Ajouter un coworker (${priceOfNewCoworker}€)`);
+    game.setNewCoworkerPrice();
   }
 
   function loop(now) {
