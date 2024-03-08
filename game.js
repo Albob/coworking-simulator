@@ -190,17 +190,25 @@ class Game {
 
     this.money -= priceOfNewCoworker;
     priceOfNewCoworker = Math.ceil(priceOfNewCoworker * 1.5);
-
     this.coworkers.push(new Coworker());
 
-    const coworkers_node = document.getElementById('coworkers');
-    const add_coworker_button = document.getElementById('add_coworker');
-    const new_coworker_node = document.createElement('p');
-    new_coworker_node.classList.add("person");
-    new_coworker_node.setAttribute("id", "coworker0");
-    coworkers_node.appendChild(new_coworker_node);
-    this.dom.coworkers.push(new_coworker_node);
-    coworkers_node.appendChild(add_coworker_button);
+    {
+      const coworkers_node = document.getElementById('coworkers');
+      const new_coworker_node = document.createElement('p');
+      new_coworker_node.classList.add("person");
+      new_coworker_node.setAttribute("id", "coworker0");
+      coworkers_node.appendChild(new_coworker_node);
+      this.dom.coworkers.push(new_coworker_node);
+
+      // Move add_coworker node to the end of the node
+      const add_coworker_button = document.getElementById('add_coworker');
+      coworkers_node.appendChild(add_coworker_button);
+
+      const place = kPlaces[this.level];
+      if (place.capacity <= this.coworkers.length) {
+        add_coworker_button.style.display = 'none';
+      }
+    }
 
     this.refreshHtml();
   }
