@@ -124,12 +124,19 @@ class Coworker {
     return faces[faceIndex];
   }
 
-  motivationAsText() {
-    const maxBlocks = 20;
-    const nbBlocks = Math.round(this.motivation / 100 * maxBlocks);
-    const blocks = ''.padEnd(nbBlocks, '#');
+  motivationAsColor() {
+    if (this.motivation > 66) return '#00e100'
+    else if (this.motivation > 33) return '#d7cb14';
+    else return 'red';
+  }
 
-    return `[${blocks.padEnd(maxBlocks, '_')}]`;
+  motivationAsBattery(coworker_index) {
+    const bar_color = this.motivationAsColor();
+    return `
+      <div id="coworkerMotivation${coworker_index}" style="display: inline-block; position: relative; top: 4px; height: 16px; width: 50px; border: 2px solid white; border-radius: 6px;">
+        <div id="motivationBar${coworker_index}" style="background-color: ${bar_color}; border-radius: 4px; height: 100%; width:100%"></div>
+      </div>
+    `;
   }
 }
 
@@ -170,7 +177,7 @@ class Game {
         this.dom.coworkers[i].innerHTML = `
           <span class="emoji" id="coworkerEmoji${i}">${coworker.motivationAsEmoji()}</span>
           <b>${coworker.name}</b>, ${coworker.job}.
-          <b>Motivation:</b> <span id="coworkerMotivation${i}">${coworker.motivationAsText()}</span>
+          ${coworker.motivationAsBattery(i)}
           <input type="button" id="toggleCoworker${i}" value="${buttonText}" onClick="onCoworkerClicked(${i})" />`;
       }
     }
@@ -263,8 +270,9 @@ class Game {
     {
       let i = 0;
       this.coworkers.forEach(coworker => {
-        const motivationSpan = document.getElementById(`coworkerMotivation${i}`);
-        motivationSpan.innerText = coworker.motivationAsText();
+        const motivationBar = document.getElementById(`motivationBar${i}`);
+        motivationBar.style.width = `${coworker.motivation}%`;
+        motivationBar.style.backgroundColor = `${coworker.motivationAsColor()}`;
         const emojiSpan = document.getElementById(`coworkerEmoji${i}`);
         emojiSpan.innerText = coworker.motivationAsEmoji();
         i++;
