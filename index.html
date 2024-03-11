@@ -23,6 +23,30 @@
       color: #bbb;
     }
 
+    dialog {
+      background-color: #333;
+      color: #bbb;
+      border: 2px solid white;
+      border-radius: 6px;
+      min-width: 250px;
+      min-height: 75px;
+      text-align: center;
+    }
+
+    dialog form {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    dialog form title {
+      font-weight: bold;
+    }
+
+    dialog form * {
+      flex: 1;
+    }
+
     a:visited {
       color: rgb(173, 160, 203);
     }
@@ -100,6 +124,23 @@
       <span>Copyright <a href="https://abauchu.net">Alexis Bauchu</a> 2022-2023</span>
     </p>
   </div>
+
+  <dialog id="ok_dialog">
+    <form method="dialog">
+      <div id="title"></div>
+      <div id="message"></div>
+      <input type="submit" id="ok_button" value="OK">
+    </form>
+  </dialog>
+
+  <dialog id="ok_cancel_dialog">
+    <form method="dialog">
+      <div id="title"></div>
+      <div id="message"></div>
+      <input type="submit" id="ok_button" value="OK">
+      <input type="submit" id="cancel_button" value="Annuler">
+    </form>
+  </dialog>
 </body>
 
 </html>

@@ -176,8 +176,8 @@ class Game {
         const buttonText = coworker.isWorking ? 'Faire une pause 🎯' : 'Travailler 💼';
         this.dom.coworkers[i].innerHTML = `
           <span class="emoji" id="coworkerEmoji${i}">${coworker.motivationAsEmoji()}</span>
-          <b>${coworker.name}</b>, ${coworker.job}.
           ${coworker.motivationAsBattery(i)}
+          <b>${coworker.name}</b>, ${coworker.job}.
           <input type="button" id="toggleCoworker${i}" value="${buttonText}" onClick="onCoworkerClicked(${i})" />`;
       }
     }
@@ -185,18 +185,19 @@ class Game {
 
   addCoworker() {
     if (this.money < priceOfNewCoworker) {
-      alert("Pas assez d'argent");
+      okDialog("Pas assez d'argent", '', "Dommage...");
       return;
     }
 
     const place = kPlaces[this.level];
     if (place.capacity <= this.coworkers.length) {
-      alert("Plus de place! Déménagez pour augmenter la capacité");
+      okDialog("Plus de place!", "Déménagez pour augmenter la capacité");
       return;
     }
 
     this.money -= priceOfNewCoworker;
-    priceOfNewCoworker = Math.ceil(priceOfNewCoworker * 1.5);
+    priceOfNewCoworker = nextPriceOfNewCoworker();
+    game.renderNewCoworkerPrice();
     this.coworkers.push(new Coworker());
 
     {
@@ -220,9 +221,8 @@ class Game {
     this.refreshHtml();
   }
 
-  setNewCoworkerPrice() {
-    const button = document.getElementById('add_coworker')
-    button.setAttribute('value', `Ajouter un coworker (${priceOfNewCoworker}€)`);
+  renderNewCoworkerPrice() {
+    document.getElementById('add_coworker').setAttribute('value', `Ajouter un coworker (${priceOfNewCoworker}€)`);
   }
 
   update(now) {
@@ -306,7 +306,7 @@ function onLoad() {
   {
     const button = document.getElementById('add_coworker');
     button.addEventListener('click', () => game.addCoworker());
-    game.setNewCoworkerPrice();
+    game.renderNewCoworkerPrice();
   }
 
   function loop(now) {
@@ -318,6 +318,21 @@ function onLoad() {
 
   game.render();
   loop(performance.now());
+}
+
+function okDialog(title, message = '', ok_label = 'OK') {
+  document.querySelector('#ok_dialog form #title').textContent = title;
+  document.querySelector('#ok_dialog form #message').textContent = message;
+  document.querySelector('#ok_dialog form #ok_button').value = ok_label;
+  document.getElementById('ok_dialog').showModal();
+}
+
+function okCancelDialog(title, message = '', ok_label = 'OK', cancel_label = 'Annuler') {
+  document.querySelector('#ok_cancel_dialog form #title').textContent = title;
+  document.querySelector('#ok_cancel_dialog form #message').textContent = message;
+  document.querySelector('#ok_cancel_dialog form #ok_button').value = ok_label;
+  document.querySelector('#ok_cancel_dialog form #cancel_button').value = ok_label;
+  document.getElementById('ok_dialog').showModal();
 }
 
 window.addEventListener('load', onLoad);
