@@ -3,6 +3,7 @@ const kMotivationPerHour = 16;
 const kMoneyPerHour = 4;
 
 let priceOfNewCoworker = 35;
+const nextPriceOfNewCoworker = () => priceOfNewCoworker * 1.4;
 
 function randomElementIn(collection) {
   const index = Math.floor(Math.random() * collection.length);
