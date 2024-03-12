@@ -2,7 +2,7 @@ const kIngameTimeFactor = 1100;
 const kMotivationPerHour = 16;
 const kMoneyPerHour = 4;
 
-let priceOfNewCoworker = 2;
+let priceOfNewCoworker = 35;
 
 function randomElementIn(collection) {
   const index = Math.floor(Math.random() * collection.length);
@@ -124,12 +124,19 @@ class Coworker {
     return faces[faceIndex];
   }
 
-  motivationAsText() {
-    const maxBlocks = 20;
-    const nbBlocks = Math.round(this.motivation / 100 * maxBlocks);
-    const blocks = ''.padEnd(nbBlocks, '#');
+  motivationAsColor() {
+    if (this.motivation > 66) return '#00e100'
+    else if (this.motivation > 33) return '#d7cb14';
+    else return 'red';
+  }
 
-    return `[${blocks.padEnd(maxBlocks, '_')}]`;
+  motivationAsBattery(coworker_index) {
+    const bar_color = this.motivationAsColor();
+    return `
+      <div id="coworkerMotivation${coworker_index}" style="display: inline-block; position: relative; top: 4px; height: 16px; width: 50px; border: 2px solid white; border-radius: 6px;">
+        <div id="motivationBar${coworker_index}" style="background-color: ${bar_color}; border-radius: 4px; height: 100%; width:100%"></div>
+      </div>
+    `;
   }
 }
 
@@ -169,8 +176,8 @@ class Game {
         const buttonText = coworker.isWorking ? 'Faire une pause 🎯' : 'Travailler 💼';
         this.dom.coworkers[i].innerHTML = `
           <span class="emoji" id="coworkerEmoji${i}">${coworker.motivationAsEmoji()}</span>
+          ${coworker.motivationAsBattery(i)}
           <b>${coworker.name}</b>, ${coworker.job}.
-          <b>Motivation:</b> <span id="coworkerMotivation${i}">${coworker.motivationAsText()}</span>
           <input type="button" id="toggleCoworker${i}" value="${buttonText}" onClick="onCoworkerClicked(${i})" />`;
       }
     }
@@ -178,18 +185,19 @@ class Game {
 
   addCoworker() {
     if (this.money < priceOfNewCoworker) {
-      alert("Pas assez d'argent");
+      okDialog("Pas assez d'argent", '', "Dommage...");
       return;
     }
 
     const place = kPlaces[this.level];
     if (place.capacity <= this.coworkers.length) {
-      alert("Plus de place! Déménagez pour augmenter la capacité");
+      okDialog("Plus de place!", "Déménagez pour augmenter la capacité");
       return;
     }
 
     this.money -= priceOfNewCoworker;
-    priceOfNewCoworker = Math.ceil(priceOfNewCoworker * 1.5);
+    priceOfNewCoworker = nextPriceOfNewCoworker();
+    game.renderNewCoworkerPrice();
     this.coworkers.push(new Coworker());
 
     {
@@ -213,9 +221,8 @@ class Game {
     this.refreshHtml();
   }
 
-  setNewCoworkerPrice() {
-    const button = document.getElementById('add_coworker')
-    button.setAttribute('value', `Ajouter un coworker (${priceOfNewCoworker}€)`);
+  renderNewCoworkerPrice() {
+    document.getElementById('add_coworker').setAttribute('value', `Ajouter un coworker (${priceOfNewCoworker}€)`);
   }
 
   update(now) {
@@ -263,8 +270,9 @@ class Game {
     {
       let i = 0;
       this.coworkers.forEach(coworker => {
-        const motivationSpan = document.getElementById(`coworkerMotivation${i}`);
-        motivationSpan.innerText = coworker.motivationAsText();
+        const motivationBar = document.getElementById(`motivationBar${i}`);
+        motivationBar.style.width = `${coworker.motivation}%`;
+        motivationBar.style.backgroundColor = `${coworker.motivationAsColor()}`;
         const emojiSpan = document.getElementById(`coworkerEmoji${i}`);
         emojiSpan.innerText = coworker.motivationAsEmoji();
         i++;
@@ -298,7 +306,7 @@ function onLoad() {
   {
     const button = document.getElementById('add_coworker');
     button.addEventListener('click', () => game.addCoworker());
-    game.setNewCoworkerPrice();
+    game.renderNewCoworkerPrice();
   }
 
   function loop(now) {
@@ -310,6 +318,21 @@ function onLoad() {
 
   game.render();
   loop(performance.now());
+}
+
+function okDialog(title, message = '', ok_label = 'OK') {
+  document.querySelector('#ok_dialog form #title').textContent = title;
+  document.querySelector('#ok_dialog form #message').textContent = message;
+  document.querySelector('#ok_dialog form #ok_button').value = ok_label;
+  document.getElementById('ok_dialog').showModal();
+}
+
+function okCancelDialog(title, message = '', ok_label = 'OK', cancel_label = 'Annuler') {
+  document.querySelector('#ok_cancel_dialog form #title').textContent = title;
+  document.querySelector('#ok_cancel_dialog form #message').textContent = message;
+  document.querySelector('#ok_cancel_dialog form #ok_button').value = ok_label;
+  document.querySelector('#ok_cancel_dialog form #cancel_button').value = ok_label;
+  document.getElementById('ok_dialog').showModal();
 }
 
 window.addEventListener('load', onLoad);
