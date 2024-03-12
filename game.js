@@ -134,8 +134,10 @@ class Coworker {
   motivationAsBattery(coworker_index) {
     const bar_color = this.motivationAsColor();
     return `
-      <div id="coworkerMotivation${coworker_index}" style="display: inline-block; position: relative; top: 4px; height: 16px; width: 50px; border: 2px solid white; border-radius: 6px;">
-        <div id="motivationBar${coworker_index}" style="background-color: ${bar_color}; border-radius: 4px; height: 100%; width:100%"></div>
+      <div id="coworkerMotivation${coworker_index}" style="display: inline-block; position: relative; top: 4px; height: 16px; width: 50px; border: 2px solid white; border-radius: 4px; margin-right:10px;">
+        <div id="motivationBar${coworker_index}" style="background-color: ${bar_color}; border-radius: 2px; height: 105%; width:105%"></div>
+        <div style="position:absolute; top:-5px; bottom:0px; left:0px; right:0px; text-align: center;" id="lightning${coworker_index}">⚡️</div>
+        <div style="position:absolute; border: 2px solid white; border-radius: 2px; left:50px; top:2px; width:3px; height:8px;"></div>
       </div>
     `;
   }
@@ -269,14 +271,14 @@ class Game {
     this.dom.money.innerText = Math.floor(this.money) + "€";
 
     {
-      let i = 0;
-      this.coworkers.forEach(coworker => {
+      this.coworkers.forEach((coworker, i) => {
         const motivationBar = document.getElementById(`motivationBar${i}`);
         motivationBar.style.width = `${coworker.motivation}%`;
         motivationBar.style.backgroundColor = `${coworker.motivationAsColor()}`;
         const emojiSpan = document.getElementById(`coworkerEmoji${i}`);
         emojiSpan.innerText = coworker.motivationAsEmoji();
-        i++;
+        const lightning = document.getElementById(`lightning${i}`);
+        lightning.style.display = coworker.isWorking ? 'none' : 'block';
       });
     }
   }
